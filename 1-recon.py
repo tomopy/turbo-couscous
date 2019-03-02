@@ -33,15 +33,15 @@ def main(data, params, dynamic_range=1.0, max_iter=200):
     """
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
-    # initial reconstruction guess
-    recon = np.zeros([1, data['sinogram'].shape[2], data['sinogram'].shape[2]])
+    # initial reconstruction guess; use defaults unique to each algorithm
+    recon = None
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
     for i in range(1, end+step, step):
         # name the output file
         if 'filter_name' in params:
             filename = "peppers/{}.{}.{:03d}".format(params['algorithm'],
-                                                  params['filter_name'], i)
+                                                     params['filter_name'], i)
         else:
             filename = "peppers/{}.{:03d}".format(params['algorithm'], i)
         # look for the ouput; only reconstruct if it doesn't exist
@@ -82,9 +82,17 @@ if __name__ == '__main__':
     dynamic_range = np.max(data['original'])
     for params in [
         {'algorithm': 'art', 'num_iter': 10},
-        {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
-        {'algorithm': 'gridrec', 'filter_name': 'parzen'},
         {'algorithm': 'grad', 'num_iter': 10, 'reg_par': -1},
+        {'algorithm': 'gridrec'},
+        {'algorithm': 'gridrec', 'filter_name': None},
+        {'algorithm': 'gridrec', 'filter_name': 'none'},
+        {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+        {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+        {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+        {'algorithm': 'gridrec', 'filter_name': 'hann'},
+        {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+        {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+        {'algorithm': 'gridrec', 'filter_name': 'shepp'},
         {'algorithm': 'mlem', 'num_iter': 10},
         {'algorithm': 'sirt', 'num_iter': 10},
         {'algorithm': 'tv', 'num_iter': 10},
