@@ -1,0 +1,10 @@
+name: tomopy-cpu
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - matplotlib=3
+  - numpy=1.15
+  - python=3.6
+  - tomopy=1.2.1
+  - xdesign=0.5.1
