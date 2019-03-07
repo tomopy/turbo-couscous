@@ -48,7 +48,7 @@ def main():
     a numpyz file with the original, projections, and angles to the disk.
     """
     original = tomopy.peppers(size=256)
-    os.mkdirs('peppers', exist_ok=True)
+    os.makedirs('peppers', exist_ok=True)
     print(original.shape)
     dynam_range = np.max(original)
     plt.imsave(
