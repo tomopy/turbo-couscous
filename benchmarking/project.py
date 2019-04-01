@@ -3,6 +3,7 @@
 import os
 import logging
 
+import click
 import tomopy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,8 +45,13 @@ def multilevel_order(L):
         level *= 2
     return (np.concatenate(order) * L).astype('int')
 
-
-def main(num_angles=256, width=256, phantom='peppers', trials=1, noise=False):
+@click.command()
+@click.option('-p', '--phantom', default='peppers', help='Name of a phantom.')
+@click.option('-w', '--width', default=256, help='Pixel width of phantom before padding.', type=int)
+@click.option('-a', '--num_angles', default=256, help='Number of projection angles.', type=int)
+@click.option('-t', '--trials', default=1, help='Number of phantom repeitions.', type=int)
+@click.option('-n', '--noise', help='Whether to add noise.', is_flag=True)
+def project(num_angles, width, phantom, trials, noise):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
@@ -77,4 +83,4 @@ def main(num_angles=256, width=256, phantom='peppers', trials=1, noise=False):
 
 
 if __name__ == '__main__':
-    main()
+    project()

@@ -1,16 +1,18 @@
 """Reconstruct phantoms."""
 
 import os.path
+import logging
+
+import click
 import tomopy
 import numpy as np
 import matplotlib.pyplot as plt
 import xdesign as xd
-import logging
 
 logger = logging.getLogger(__name__)
 
 
-def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
+def reconstruct(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
     """Reconstruct data using given params.
 
     Parameters
@@ -81,10 +83,12 @@ def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
             vmin=0, vmax=1.1*dynamic_range,
         )
 
-
-if __name__ == '__main__':
-    phantom = 'peppers'
-    num_iter = 1
+@click.command()
+@click.option('-p', '--phantom', default='peppers', help='Name of a phantom.')
+@click.option('-i', '--num_iter', default=1, help='Number of iterations between saves.', type=int)
+@click.option('-m', '--max-iter', default=5, help='Total number of iterations.', type=int)
+def main(phantom, num_iter):
+    """Reconstruct data using TomoPy."""
     data = np.load('{}/simulated_data.npz'.format(phantom))
     dynamic_range = np.max(data['original'])
     for params in [
@@ -105,6 +109,12 @@ if __name__ == '__main__':
         {'algorithm': 'tv', 'num_iter': num_iter},
     ]:
         try:
-            main(data, params, dynamic_range=dynamic_range, max_iter=5)
+            reconstruct(data, params, dynamic_range=dynamic_range, max_iter=5)
         except ValueError as e:
             logger.warn(e)
+
+# TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad', 'pml_hybrid',
+# 'pml_quad'
+
+if __name__ == '__main__':
+    main()
