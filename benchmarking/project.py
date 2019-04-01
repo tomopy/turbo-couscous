@@ -45,7 +45,7 @@ def multilevel_order(L):
     return (np.concatenate(order) * L).astype('int')
 
 
-def main(num_angles=256, width=256, phantom='peppers'):
+def main(num_angles=256, width=256, phantom='peppers', trials=1, noise=False):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
@@ -60,11 +60,15 @@ def main(num_angles=256, width=256, phantom='peppers'):
         cmap=plt.cm.cividis,
         vmin=0, vmax=1.1*dynam_range,
         )
+    if trials > 1:
+        original = np.tile(original, reps=(trials, 1, 1))
     angles = tomopy.angles(num_angles)
     # Reorder projections optimally
     p = multilevel_order(len(angles)).astype(np.int32)
     angles = angles[p, ...]
     sinogram = tomopy.project(original, angles, pad=True)
+    if noise:
+        sinogram = np.random.poisson(sinogram)
     logger.info('Original shape: {}, Padded Shape: {}'.format(original.shape, sinogram.shape))
     np.savez(
         '{}/simulated_data.npz'.format(phantom),

@@ -58,13 +58,16 @@ def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
                 **params,
             )
         # compute quality metrics
-        scales, msssim, quality_maps = xd.msssim(
-            data['original'][0],
-            recon[0, pad:recon.shape[1]-pad, pad:recon.shape[2]-pad],
-            L=dynamic_range,
-        )
+        msssim = np.empty(len(recon))
+        for z in range(len(recon)):
+            # compute the reconstructed image quality metrics
+            scales, msssim[z], quality_maps = xd.msssim(
+                data['original'][z],
+                recon[z, pad:recon.shape[1]-pad, pad:recon.shape[2]-pad],
+                L=dynamic_range,
+            )
         # save all information
-        logger.info("{} : ms-ssim = {:05.3f}".format(filename, msssim))
+        logger.info("{} : ms-ssim = {:05.3f}".format(filename, np.mean(msssim)))
         np.savez(
             filename + '.npz',
             recon=recon,
