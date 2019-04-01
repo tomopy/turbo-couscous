@@ -1,5 +1,8 @@
 """Reconstruct phantoms."""
 
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 import os.path
 import logging
 
@@ -12,7 +15,13 @@ import xdesign as xd
 logger = logging.getLogger(__name__)
 
 
-def reconstruct(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
+def reconstruct(
+        data,
+        params,
+        dynamic_range=1.0,
+        max_iter=200,
+        phantom='peppers',
+):
     """Reconstruct data using given params.
 
     Parameters
@@ -41,13 +50,14 @@ def reconstruct(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'
     recon = None
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
-    for i in range(1, end+step, step):
+    for i in range(1, end + step, step):
         # name the output file
         if 'filter_name' in params:
-            filename = "{0}/{1}/{1}.{2}.{3:03d}".format(phantom, params['algorithm'],
-                                                     params['filter_name'], i)
+            filename = "{0}/{1}/{1}.{2}.{3:03d}".format(
+                phantom, params['algorithm'], params['filter_name'], i)
         else:
-            filename = "{0}/{1}/{1}.{2:03d}".format(phantom, params['algorithm'], i)
+            filename = "{0}/{1}/{1}.{2:03d}".format(phantom,
+                                                    params['algorithm'], i)
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
@@ -65,11 +75,12 @@ def reconstruct(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'
             # compute the reconstructed image quality metrics
             scales, msssim[z], quality_maps = xd.msssim(
                 data['original'][z],
-                recon[z, pad:recon.shape[1]-pad, pad:recon.shape[2]-pad],
+                recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
                 L=dynamic_range,
             )
         # save all information
-        logger.info("{} : ms-ssim = {:05.3f}".format(filename, np.mean(msssim)))
+        logger.info("{} : ms-ssim = {:05.3f}".format(filename,
+                                                     np.mean(msssim)))
         np.savez(
             filename + '.npz',
             recon=recon,
@@ -77,17 +88,36 @@ def reconstruct(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'
         )
         plt.imsave(
             filename + '.png',
-            recon[0, pad:recon.shape[1]-pad, pad:recon.shape[2]-pad],
+            recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
             format='png',
             cmap=plt.cm.cividis,
-            vmin=0, vmax=1.1*dynamic_range,
+            vmin=0,
+            vmax=1.1 * dynamic_range,
         )
 
+
 @click.command()
-@click.option('-p', '--phantom', default='peppers', help='Name of a phantom.')
-@click.option('-i', '--num_iter', default=1, help='Number of iterations between saves.', type=int)
-@click.option('-m', '--max-iter', default=5, help='Total number of iterations.', type=int)
-def main(phantom, num_iter):
+@click.option(
+    '-p',
+    '--phantom',
+    default='peppers',
+    help='Name of a phantom.',
+)
+@click.option(
+    '-i',
+    '--num_iter',
+    default=1,
+    help='Number of iterations between saves.',
+    type=int,
+)
+@click.option(
+    '-m',
+    '--max-iter',
+    default=5,
+    help='Total number of iterations.',
+    type=int,
+)
+def main(phantom, num_iter, max_iter):
     """Reconstruct data using TomoPy."""
     data = np.load('{}/simulated_data.npz'.format(phantom))
     dynamic_range = np.max(data['original'])
@@ -107,11 +137,13 @@ def main(phantom, num_iter):
         {'algorithm': 'mlem', 'num_iter': num_iter},
         {'algorithm': 'sirt', 'num_iter': num_iter},
         {'algorithm': 'tv', 'num_iter': num_iter},
-    ]:
+    ]:  # yapf: disable
         try:
-            reconstruct(data, params, dynamic_range=dynamic_range, max_iter=5)
+            reconstruct(
+                data, params, dynamic_range=dynamic_range, max_iter=max_iter)
         except ValueError as e:
             logger.warn(e)
+
 
 # TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad', 'pml_hybrid',
 # 'pml_quad'

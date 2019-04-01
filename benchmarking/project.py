@@ -1,5 +1,8 @@
 """Generate sinograms from phantoms."""
 
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 import os
 import logging
 
@@ -45,12 +48,41 @@ def multilevel_order(L):
         level *= 2
     return (np.concatenate(order) * L).astype('int')
 
+
 @click.command()
-@click.option('-p', '--phantom', default='peppers', help='Name of a phantom.')
-@click.option('-w', '--width', default=256, help='Pixel width of phantom before padding.', type=int)
-@click.option('-a', '--num_angles', default=256, help='Number of projection angles.', type=int)
-@click.option('-t', '--trials', default=1, help='Number of phantom repeitions.', type=int)
-@click.option('-n', '--noise', help='Whether to add noise.', is_flag=True)
+@click.option(
+    '-p',
+    '--phantom',
+    default='peppers',
+    help='Name of a phantom.',
+)
+@click.option(
+    '-w',
+    '--width',
+    default=256,
+    help='Pixel width of phantom before padding.',
+    type=int,
+)
+@click.option(
+    '-a',
+    '--num_angles',
+    default=256,
+    help='Number of projection angles.',
+    type=int,
+)
+@click.option(
+    '-t',
+    '--trials',
+    default=1,
+    help='Number of phantom repeitions.',
+    type=int,
+)
+@click.option(
+    '-n',
+    '--noise',
+    help='Whether to add noise.',
+    is_flag=True,
+)
 def project(num_angles, width, phantom, trials, noise):
     """Simulate data acquisition for tomography using TomoPy.
 
@@ -61,11 +93,13 @@ def project(num_angles, width, phantom, trials, noise):
     os.makedirs(phantom, exist_ok=True)
     dynam_range = np.max(original)
     plt.imsave(
-        '{}/original.png'.format(phantom), original[0, ...],
+        '{}/original.png'.format(phantom),
+        original[0, ...],
         format='png',
         cmap=plt.cm.cividis,
-        vmin=0, vmax=1.1*dynam_range,
-        )
+        vmin=0,
+        vmax=1.1 * dynam_range,
+    )
     if trials > 1:
         original = np.tile(original, reps=(trials, 1, 1))
     angles = tomopy.angles(num_angles)
@@ -75,11 +109,13 @@ def project(num_angles, width, phantom, trials, noise):
     sinogram = tomopy.project(original, angles, pad=True)
     if noise:
         sinogram = np.random.poisson(sinogram)
-    logger.info('Original shape: {}, Padded Shape: {}'.format(original.shape, sinogram.shape))
+    logger.info('Original shape: {}, Padded Shape: {}'.format(
+        original.shape, sinogram.shape))
     np.savez(
         '{}/simulated_data.npz'.format(phantom),
-        original=original, angles=angles, sinogram=sinogram
-    )
+        original=original,
+        angles=angles,
+        sinogram=sinogram)
 
 
 if __name__ == '__main__':
