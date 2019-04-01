@@ -1,9 +1,14 @@
 """Generate sinograms from phantoms."""
 
 import os
+import logging
+
 import tomopy
 import numpy as np
 import matplotlib.pyplot as plt
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def fft_order(x):
@@ -41,30 +46,29 @@ def multilevel_order(L):
     return (np.concatenate(order) * L).astype('int')
 
 
-def main():
+def main(num_angles=150, width=204, phantom='peppers'):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
     a numpyz file with the original, projections, and angles to the disk.
     """
-    original = tomopy.peppers(size=256)
-    os.makedirs('peppers', exist_ok=True)
-    print(original.shape)
+    original = tomopy.peppers(width)
+    os.makedirs(phantom, exist_ok=True)
     dynam_range = np.max(original)
     plt.imsave(
-        'peppers/original' + '.png', original[0, ...],
+        '{}/original.png'.format(phantom), original[0, ...],
         format='png',
         cmap=plt.cm.cividis,
         vmin=0, vmax=1.1*dynam_range,
         )
-    angles = tomopy.angles(256)
-    sinogram = tomopy.project(original, angles, pad=True)
+    angles = tomopy.angles(num_angles)
     # Reorder projections optimally
     p = multilevel_order(len(angles)).astype(np.int32)
     angles = angles[p, ...]
-    sinogram = sinogram[p, ...]
+    sinogram = tomopy.project(original, angles, pad=True)
+    logger.info('Original shape: {}, Padded Shape: {}'.format(original.shape, sinogram.shape))
     np.savez(
-        'peppers/data.npz',
+        '{}/simulated_data.npz'.format(phantom),
         original=original, angles=angles, sinogram=sinogram
     )
 
