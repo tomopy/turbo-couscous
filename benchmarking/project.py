@@ -7,7 +7,6 @@ import tomopy
 import numpy as np
 import matplotlib.pyplot as plt
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

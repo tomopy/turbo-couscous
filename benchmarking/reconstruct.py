@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import xdesign as xd
 import logging
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -32,6 +31,8 @@ def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
     phantom : string
         The name of the phantom
     """
+    logger.info('{}'.format(params))
+    os.makedirs('{}/{}'.format(phantom, params['algorithm']), exist_ok=True)
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
     # initial reconstruction guess; use defaults unique to each algorithm
@@ -41,10 +42,10 @@ def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
     for i in range(1, end+step, step):
         # name the output file
         if 'filter_name' in params:
-            filename = "{}/{}.{}.{:03d}".format(phantom, params['algorithm'],
+            filename = "{0}/{1}/{1}.{2}.{3:03d}".format(phantom, params['algorithm'],
                                                      params['filter_name'], i)
         else:
-            filename = "{}/{}.{:03d}".format(phantom, params['algorithm'], i)
+            filename = "{0}/{1}/{1}.{2:03d}".format(phantom, params['algorithm'], i)
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
@@ -80,11 +81,12 @@ def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
 
 if __name__ == '__main__':
     phantom = 'peppers'
+    num_iter = 1
     data = np.load('{}/simulated_data.npz'.format(phantom))
     dynamic_range = np.max(data['original'])
     for params in [
-        {'algorithm': 'art', 'num_iter': 10},
-        {'algorithm': 'grad', 'num_iter': 10, 'reg_par': -1},
+        {'algorithm': 'art', 'num_iter': num_iter},
+        {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
         {'algorithm': 'gridrec'},
         {'algorithm': 'gridrec', 'filter_name': None},
         {'algorithm': 'gridrec', 'filter_name': 'none'},
@@ -95,8 +97,11 @@ if __name__ == '__main__':
         {'algorithm': 'gridrec', 'filter_name': 'parzen'},
         {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
         {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-        {'algorithm': 'mlem', 'num_iter': 10},
-        {'algorithm': 'sirt', 'num_iter': 10},
-        {'algorithm': 'tv', 'num_iter': 10},
+        {'algorithm': 'mlem', 'num_iter': num_iter},
+        {'algorithm': 'sirt', 'num_iter': num_iter},
+        {'algorithm': 'tv', 'num_iter': num_iter},
     ]:
-        main(data, params, dynamic_range=dynamic_range, max_iter=5)
+        try:
+            main(data, params, dynamic_range=dynamic_range, max_iter=5)
+        except ValueError as e:
+            logger.warn(e)
