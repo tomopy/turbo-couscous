@@ -7,8 +7,8 @@ import tomopy
 import numpy as np
 import matplotlib.pyplot as plt
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def fft_order(x):
@@ -46,7 +46,7 @@ def multilevel_order(L):
     return (np.concatenate(order) * L).astype('int')
 
 
-def main(num_angles=150, width=204, phantom='peppers'):
+def main(num_angles=256, width=256, phantom='peppers'):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save

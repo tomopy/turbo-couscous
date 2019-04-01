@@ -7,29 +7,30 @@ import matplotlib.pyplot as plt
 import xdesign as xd
 import logging
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
-def main(data, params, dynamic_range=1.0, max_iter=200):
+def main(data, params, dynamic_range=1.0, max_iter=200, phantom='peppers'):
     """Reconstruct data using given params.
 
     Parameters
     ----------
-        data : dictionary
-            Contains three keys:
-                original : the original image
-                sinogram : the projections
-                angles : the angles of each of the projections
-        params : dictionary
-            Contains parameters to use for recostructing the data using
-            tomopy.recon().
-        dynamic_range : float
-            The expected dynamic range of the reconstructed image. This param
-            is used to scale a png image of the reconstruction
-        max_iter : int
-            The maximum number iterations if the algorithm is iterative
-
+    data : dictionary
+        Contains three keys:
+            original : the original image
+            sinogram : the projections
+            angles : the angles of each of the projections
+    params : dictionary
+        Contains parameters to use for recostructing the data using
+        tomopy.recon().
+    dynamic_range : float
+        The expected dynamic range of the reconstructed image. This param
+        is used to scale a png image of the reconstruction
+    max_iter : int
+        The maximum number iterations if the algorithm is iterative
+    phantom : string
+        The name of the phantom
     """
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
@@ -40,10 +41,10 @@ def main(data, params, dynamic_range=1.0, max_iter=200):
     for i in range(1, end+step, step):
         # name the output file
         if 'filter_name' in params:
-            filename = "peppers/{}.{}.{:03d}".format(params['algorithm'],
+            filename = "{}/{}.{}.{:03d}".format(phantom, params['algorithm'],
                                                      params['filter_name'], i)
         else:
-            filename = "peppers/{}.{:03d}".format(params['algorithm'], i)
+            filename = "{}/{}.{:03d}".format(phantom, params['algorithm'], i)
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
@@ -78,7 +79,8 @@ def main(data, params, dynamic_range=1.0, max_iter=200):
 
 
 if __name__ == '__main__':
-    data = np.load('peppers/data.npz')
+    phantom = 'peppers'
+    data = np.load('{}/simulated_data.npz'.format(phantom))
     dynamic_range = np.max(data['original'])
     for params in [
         {'algorithm': 'art', 'num_iter': 10},
@@ -97,4 +99,4 @@ if __name__ == '__main__':
         {'algorithm': 'sirt', 'num_iter': 10},
         {'algorithm': 'tv', 'num_iter': 10},
     ]:
-        main(data, params, dynamic_range=dynamic_range)
+        main(data, params, dynamic_range=dynamic_range, max_iter=5)
