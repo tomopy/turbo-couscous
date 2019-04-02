@@ -45,7 +45,6 @@ def reconstruct(
     """
     logger.info('{}'.format(params))
     base_path = os.path.join(output_dir, phantom, params['algorithm'])
-    os.makedirs(base_path, exist_ok=True)
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
     # initial reconstruction guess; use defaults unique to each algorithm
@@ -66,12 +65,16 @@ def reconstruct(
             existing_data = np.load(filename + '.npz')
             recon = existing_data['recon']
         else:
-            recon = tomopy.recon(
-                init_recon=recon,
-                tomo=data['sinogram'],
-                theta=data['angles'],
-                **params,
-            )
+            try:
+                recon = tomopy.recon(
+                    init_recon=recon,
+                    tomo=data['sinogram'],
+                    theta=data['angles'],
+                    **params,
+                )
+            except ValueError as e:
+                logger.warn(e)
+                return
         # compute quality metrics
         msssim = np.empty(len(recon))
         for z in range(len(recon)):
@@ -84,6 +87,7 @@ def reconstruct(
         # save all information
         logger.info("{} : ms-ssim = {:05.3f}".format(filename,
                                                      np.mean(msssim)))
+        os.makedirs(base_path, exist_ok=True)
         np.savez(
             filename + '.npz',
             recon=recon,
@@ -138,9 +142,9 @@ def main(phantom, num_iter, max_iter, output_dir, ncore):
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
     for params in [
+        {'algorithm': 'gridrec'},
         {'algorithm': 'art', 'num_iter': num_iter},
         {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
-        {'algorithm': 'gridrec'},
         {'algorithm': 'gridrec', 'filter_name': None},
         {'algorithm': 'gridrec', 'filter_name': 'none'},
         {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
@@ -155,16 +159,13 @@ def main(phantom, num_iter, max_iter, output_dir, ncore):
         {'algorithm': 'tv', 'num_iter': num_iter},
     ]:  # yapf: disable
         params.update({'ncore': ncore})
-        try:
-            reconstruct(
-                data,
-                params,
-                dynamic_range=dynamic_range,
-                max_iter=max_iter,
-                output_dir=output_dir,
-            )
-        except ValueError as e:
-            logger.warn(e)
+        reconstruct(
+            data,
+            params,
+            dynamic_range=dynamic_range,
+            max_iter=max_iter,
+            output_dir=output_dir,
+        )
 
 
 # TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad', 'pml_hybrid',

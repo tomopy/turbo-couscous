@@ -12,6 +12,7 @@ import re
 import click
 import matplotlib.pyplot as plt
 import numpy as np
+import tomopy
 
 logger = logging.getLogger(__name__)
 
