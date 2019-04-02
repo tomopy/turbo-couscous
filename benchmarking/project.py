@@ -96,6 +96,10 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
     Reorder the projections according to opitmal projection ordering and save
     a numpyz file with the original, projections, and angles to the disk.
     """
+    simdata_file = os.path.join(output_dir, phantom, 'simulated_data.npz')
+    if os.path.isfile(simdata_file):
+        logger.warn('Simulated data already exists!')
+        return
     original = tomopy.peppers(width)
     os.makedirs(os.path.join(output_dir, phantom), exist_ok=True)
     dynam_range = np.max(original)
@@ -118,11 +122,7 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
         sinogram = np.random.poisson(sinogram)
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
-    np.savez(
-        os.path.join(output_dir, phantom, 'simulated_data.npz'),
-        original=original,
-        angles=angles,
-        sinogram=sinogram)
+    np.savez(simdata_file, original=original, angles=angles, sinogram=sinogram)
 
 
 if __name__ == '__main__':
