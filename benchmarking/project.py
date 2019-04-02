@@ -83,17 +83,24 @@ def multilevel_order(L):
     help='Whether to add noise.',
     is_flag=True,
 )
-def project(num_angles, width, phantom, trials, noise):
+@click.option(
+    '-o',
+    '--output-dir',
+    default='',
+    help='Folder to put data inside',
+    type=click.Path(exists=False),
+)
+def project(num_angles, width, phantom, trials, noise, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
     a numpyz file with the original, projections, and angles to the disk.
     """
     original = tomopy.peppers(width)
-    os.makedirs(phantom, exist_ok=True)
+    os.makedirs(os.path.join(output_dir, phantom), exist_ok=True)
     dynam_range = np.max(original)
     plt.imsave(
-        '{}/original.png'.format(phantom),
+        os.path.join(output_dir, phantom, 'original.png'),
         original[0, ...],
         format='png',
         cmap=plt.cm.cividis,
@@ -112,7 +119,7 @@ def project(num_angles, width, phantom, trials, noise):
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez(
-        '{}/simulated_data.npz'.format(phantom),
+        os.path.join(output_dir, phantom, 'simulated_data.npz'),
         original=original,
         angles=angles,
         sinogram=sinogram)

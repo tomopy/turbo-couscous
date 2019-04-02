@@ -23,25 +23,35 @@ logger = logging.getLogger(__name__)
     default='peppers',
     help='Name of a phantom.',
 )
-def summarize(phantom, summary_file=None):
+@click.option(
+    '-o',
+    '--output-dir',
+    default='',
+    help='Folder to put data inside',
+    type=click.Path(exists=False),
+)
+def summarize(phantom, output_dir, summary_file=None):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
     """
+    base_path = os.path.join(output_dir, phantom)
     # Load data from file or make empty dictionary
     if summary_file is None:
-        summary_file = os.path.join(phantom, 'summary.json')
+        summary_file = os.path.join(base_path, 'summary.json')
     if os.path.isfile(summary_file):
         with open(summary_file, 'r') as f:
             all_results = json.load(f)
     else:
         all_results = dict()
+    logger.info("Summary is located at {}".format(summary_file))
     # Search the phantom folder for results and summarize them
-    for folder in glob.glob(os.path.join(phantom, "*")):
+    for folder in glob.glob(os.path.join(base_path, "*")):
         if os.path.isdir(folder):
             algo_results = scrape_image_quality(folder)
             algo = os.path.basename(folder)
             all_results[algo] = algo_results
+            logger.info("Found results for {}".format(algo))
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)

@@ -21,6 +21,7 @@ def reconstruct(
         dynamic_range=1.0,
         max_iter=200,
         phantom='peppers',
+        output_dir='',
 ):
     """Reconstruct data using given params.
 
@@ -43,7 +44,8 @@ def reconstruct(
         The name of the phantom
     """
     logger.info('{}'.format(params))
-    os.makedirs('{}/{}'.format(phantom, params['algorithm']), exist_ok=True)
+    base_path = os.path.join(output_dir, phantom, params['algorithm'])
+    os.makedirs(base_path, exist_ok=True)
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
     # initial reconstruction guess; use defaults unique to each algorithm
@@ -53,11 +55,12 @@ def reconstruct(
     for i in range(1, end + step, step):
         # name the output file
         if 'filter_name' in params:
-            filename = "{0}/{1}/{1}.{2}.{3:03d}".format(
-                phantom, params['algorithm'], params['filter_name'], i)
+            filename = os.path.join(
+                base_path, "{}.{}.{:03d}".format(params['algorithm'],
+                                                 params['filter_name'], i))
         else:
-            filename = "{0}/{1}/{1}.{2:03d}".format(phantom,
-                                                    params['algorithm'], i)
+            filename = os.path.join(base_path, "{}.{:03d}".format(
+                params['algorithm'], i))
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
@@ -117,9 +120,16 @@ def reconstruct(
     help='Total number of iterations.',
     type=int,
 )
-def main(phantom, num_iter, max_iter):
+@click.option(
+    '-o',
+    '--output-dir',
+    default='',
+    help='Folder to put data inside',
+    type=click.Path(exists=False),
+)
+def main(phantom, num_iter, max_iter, output_dir):
     """Reconstruct data using TomoPy."""
-    data = np.load('{}/simulated_data.npz'.format(phantom))
+    data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
     for params in [
         {'algorithm': 'art', 'num_iter': num_iter},
@@ -140,7 +150,12 @@ def main(phantom, num_iter, max_iter):
     ]:  # yapf: disable
         try:
             reconstruct(
-                data, params, dynamic_range=dynamic_range, max_iter=max_iter)
+                data,
+                params,
+                dynamic_range=dynamic_range,
+                max_iter=max_iter,
+                output_dir=output_dir,
+            )
         except ValueError as e:
             logger.warn(e)
 
