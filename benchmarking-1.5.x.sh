@@ -7,15 +7,12 @@ python -Om benchmarking.project \
   --width 1446 \
   --num_angles 1500 \
   --phantom peppers \
-  --output-dir 1.5.x
 
 python -Om benchmarking.reconstruct \
   --ncore 1 \
   --num-iter 300 \
   --iter-step 5 \
   --phantom peppers \
-  --output-dir 1.5.x
 
 python -Om benchmarking.summarize \
   --phantom peppers \
-  --output-dir 1.5.x

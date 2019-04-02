@@ -123,7 +123,7 @@ def reconstruct(
 @click.option(
     '-o',
     '--output-dir',
-    default='',
+    default=tomopy.__version__,
     help='Folder to put data inside',
     type=click.Path(exists=False),
 )
