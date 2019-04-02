@@ -127,7 +127,13 @@ def reconstruct(
     help='Folder to put data inside',
     type=click.Path(exists=False),
 )
-def main(phantom, num_iter, max_iter, output_dir):
+@click.option(
+    '--ncore',
+    default=1,
+    help='Number of CPU cores to use,',
+    type=int,
+)
+def main(phantom, num_iter, max_iter, output_dir, ncore):
     """Reconstruct data using TomoPy."""
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
@@ -148,6 +154,7 @@ def main(phantom, num_iter, max_iter, output_dir):
         {'algorithm': 'sirt', 'num_iter': num_iter},
         {'algorithm': 'tv', 'num_iter': num_iter},
     ]:  # yapf: disable
+        params.update({'ncore': ncore})
         try:
             reconstruct(
                 data,
