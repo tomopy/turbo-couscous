@@ -9,7 +9,7 @@ python -Om benchmarking.project \
   --phantom peppers \
 
 python -Om benchmarking.reconstruct \
-  --ncore 1 \
+  --ncore 16 \
   --num-iter 5 \
   --max-iter 5 \
   --phantom peppers \
