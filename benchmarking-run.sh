@@ -10,8 +10,8 @@ python -Om benchmarking.project \
 
 python -Om benchmarking.reconstruct \
   --ncore 1 \
-  --num-iter 300 \
-  --iter-step 5 \
+  --num-iter 5 \
+  --max-iter 5 \
   --phantom peppers \
 
 python -Om benchmarking.summarize \

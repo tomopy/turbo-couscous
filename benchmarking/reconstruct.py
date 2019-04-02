@@ -108,7 +108,7 @@ def reconstruct(
 )
 @click.option(
     '-i',
-    '--num_iter',
+    '--num-iter',
     default=1,
     help='Number of iterations between saves.',
     type=int,
