@@ -25,6 +25,8 @@ def reconstruct(
 ):
     """Reconstruct data using given params.
 
+    Resumes from previous reconstruction if exact files already exist.
+
     Parameters
     ----------
     data : dictionary
@@ -64,6 +66,7 @@ def reconstruct(
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
             recon = existing_data['recon']
+            msssim = existing_data['msssim']
         else:
             try:
                 recon = tomopy.recon(
@@ -75,32 +78,33 @@ def reconstruct(
             except ValueError as e:
                 logger.warn(e)
                 return
-        # compute quality metrics
-        msssim = np.empty(len(recon))
-        for z in range(len(recon)):
-            # compute the reconstructed image quality metrics
-            scales, msssim[z], quality_maps = xd.msssim(
-                data['original'][z],
-                recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
-                L=dynamic_range,
+            # compute quality metrics
+            msssim = np.empty(len(recon))
+            for z in range(len(recon)):
+                # compute the reconstructed image quality metrics
+                scales, msssim[z], quality_maps = xd.msssim(
+                    data['original'][z],
+                    recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] -
+                          pad],
+                    L=dynamic_range,
+                )
+            os.makedirs(base_path, exist_ok=True)
+            # save all information
+            np.savez(
+                filename + '.npz',
+                recon=recon,
+                msssim=msssim,
             )
-        # save all information
+            plt.imsave(
+                filename + '.png',
+                recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
+                format='png',
+                cmap=plt.cm.cividis,
+                vmin=0,
+                vmax=1.1 * dynamic_range,
+            )
         logger.info("{} : ms-ssim = {:05.3f}".format(filename,
                                                      np.mean(msssim)))
-        os.makedirs(base_path, exist_ok=True)
-        np.savez(
-            filename + '.npz',
-            recon=recon,
-            msssim=msssim,
-        )
-        plt.imsave(
-            filename + '.png',
-            recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
-            format='png',
-            cmap=plt.cm.cividis,
-            vmin=0,
-            vmax=1.1 * dynamic_range,
-        )
 
 
 @click.command()
