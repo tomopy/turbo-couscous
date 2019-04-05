@@ -39,7 +39,7 @@ def reconstruct(
         tomopy.recon().
     dynamic_range : float
         The expected dynamic range of the reconstructed image. This param
-        is used to scale a png image of the reconstruction
+        is used to scale a jpg image of the reconstruction
     max_iter : int
         The maximum number iterations if the algorithm is iterative
     phantom : string
@@ -96,9 +96,9 @@ def reconstruct(
                 msssim=msssim,
             )
             plt.imsave(
-                filename + '.png',
+                filename + '.jpg',
                 recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
-                format='png',
+                format='jpg',
                 cmap=plt.cm.cividis,
                 vmin=0,
                 vmax=1.1 * dynamic_range,
