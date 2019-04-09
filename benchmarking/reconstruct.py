@@ -22,6 +22,7 @@ def reconstruct(
         max_iter=200,
         phantom='peppers',
         output_dir='',
+        term_crit=0.01,
 ):
     """Reconstruct data using given params.
 
@@ -44,6 +45,9 @@ def reconstruct(
         The maximum number iterations if the algorithm is iterative
     phantom : string
         The name of the phantom
+    term_crit : float
+        Benchmark ends early if reconstruction quality increases less than this
+        amount.
     """
     logger.info('{}'.format(params))
     base_path = os.path.join(output_dir, phantom, params['algorithm'])
@@ -53,6 +57,7 @@ def reconstruct(
     recon = None
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
+    peak_quality = 0
     for i in range(1, end + step, step):
         # name the output file
         if 'filter_name' in params:
@@ -105,6 +110,10 @@ def reconstruct(
             )
         logger.info("{} : ms-ssim = {:05.3f}".format(filename,
                                                      np.mean(msssim)))
+        if i > 1 and np.mean(msssim) - peak_quality < term_crit:
+            logger.info("Early termination at {} iterations".format(i))
+            break
+        peak_quality = max(np.mean(msssim), peak_quality)
 
 
 @click.command()
