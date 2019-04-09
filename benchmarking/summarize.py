@@ -40,6 +40,7 @@ def summarize(phantom, output_dir, summary_file=None):
     # Load data from file or make empty dictionary
     if summary_file is None:
         summary_file = os.path.join(base_path, 'summary.json')
+        summary_plot = os.path.join(base_path, 'summary.svg')
     if os.path.isfile(summary_file):
         with open(summary_file, 'r') as f:
             all_results = json.load(f)
@@ -56,12 +57,12 @@ def summarize(phantom, output_dir, summary_file=None):
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
+    image_quality_vs_time_plot(summary_plot, all_results)
 
 
 def image_quality_vs_time_plot(
         plot_name,
-        json_filename,
-        algo_folder_dir,
+        results,
 ):
     """Create a lineplot with errorbars of image quality vs time.
 
@@ -82,31 +83,37 @@ def image_quality_vs_time_plot(
         npz files.
 
     """
-    raise NotImplementedError()
-
-    results = scrape_algorithm_times(json_filename)
-
-    for algo in results.keys():
-        algo_folder = os.path.join(algo_folder_dir, algo)
-        results[algo].update(scrape_image_quality(algo_folder))
-
     plt.figure(dpi=600)
 
     for algo in results.keys():
-        # Normalize the iterations to the range [0, total_wall_time]
-        time_steps = (
-            np.array(results[algo]["num_iter"]) / results[algo]["num_iter"][-1]
-            * results[algo]["wall time"])
-        plt.errorbar(
-            x=time_steps,
-            y=results[algo]["quality"],
-            yerr=results[algo]["error"],
-            fmt='-o')
+        if algo in ['gridrec', 'fbp']:
+            # These methods are categorical instead of sequential
+            time_steps = np.arange(len(results[algo]["num_iter"]))
+            plt.errorbar(
+                x=time_steps,
+                y=results[algo]["quality"],
+                yerr=results[algo]["error"],
+                fmt='o',
+            )
+            for i, filter_name in enumerate(results[algo]["num_iter"]):
+                plt.annotate(
+                    filter_name,
+                    (time_steps[i], results[algo]["quality"][i]),
+                    va='center',
+                )
+        else:
+            time_steps = np.array(results[algo]["num_iter"])
+            plt.errorbar(
+                x=time_steps,
+                y=results[algo]["quality"],
+                yerr=results[algo]["error"],
+                fmt='-o',
+            )
 
     plt.ylim([0, 1])
 
     plt.legend(results.keys())
-    plt.xlabel('time [s]')
+    plt.xlabel('iterations')
     plt.ylabel('MS-SSIM Index')
 
     plt.savefig(plot_name, dpi=600, pad_inches=0.0)
