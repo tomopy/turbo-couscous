@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-o',
     '--output-dir',
-    default=tomopy.__version__,
+    default=os.path.join('local', tomopy.__version__),
     help='Folder to put data inside',
     type=click.Path(exists=False),
 )
