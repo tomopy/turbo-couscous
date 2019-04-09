@@ -135,9 +135,13 @@ def scrape_image_quality(algo_folder):
             i = int(i)
         except ValueError:
             pass  # Gridrec and FBP have filter names instead
-        num_iter.append(i)
-        quality.append(np.mean(data['msssim']))
-        error.append(np.std(data['msssim']))
+        try:
+            quality.append(np.mean(data['msssim']))
+            error.append(np.std(data['msssim']))
+            num_iter.append(i)
+        except KeyError:
+            logger.warning("MSSSIM data missing from {}".format(file))
+            pass  # The data was missing from the file
 
     logger.debug("num_iter: {}".format(num_iter))
     logger.debug("quality: {}".format(quality))
