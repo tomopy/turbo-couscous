@@ -26,14 +26,14 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-i',
     '--num-iter',
-    default=1,
+    default=5,
     help='Number of iterations between saves.',
     type=int,
 )
 @click.option(
     '-m',
     '--max-iter',
-    default=5,
+    default=300,
     help='Total number of iterations.',
     type=int,
 )
@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option(
     '--ncore',
-    default=1,
+    default=16,
     help='Number of CPU cores to use,',
     type=int,
 )

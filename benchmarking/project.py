@@ -24,21 +24,21 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-w',
     '--width',
-    default=256,
+    default=1446,
     help='Pixel width of phantom before padding.',
     type=int,
 )
 @click.option(
     '-a',
     '--num-angles',
-    default=256,
+    default=1500,
     help='Number of projection angles.',
     type=int,
 )
 @click.option(
     '-t',
     '--trials',
-    default=1,
+    default=32,
     help='Number of phantom repeitions.',
     type=int,
 )
