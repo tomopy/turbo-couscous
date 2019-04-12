@@ -50,9 +50,12 @@ def summarize(phantom, output_dir, summary_file=None):
     # Search the phantom folder for results and summarize them
     for folder in glob.glob(os.path.join(base_path, "*")):
         if os.path.isdir(folder):
+            all_results.update(
+                scrape_algorithm_times(
+                    os.path.join(folder, 'run_tomopy.json')))
             algo_results = scrape_image_quality(folder)
             algo = os.path.basename(folder)
-            all_results[algo] = algo_results
+            all_results[algo].update(algo_results)
             logger.info("Found results for {}".format(algo))
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
@@ -88,7 +91,8 @@ def image_quality_vs_time_plot(
     for algo in results.keys():
         if algo in ['gridrec', 'fbp']:
             # These methods are categorical instead of sequential
-            time_steps = np.arange(len(results[algo]["num_iter"]))
+            time_steps = np.ones(len(results[algo]["num_iter"]))
+            time_steps = time_steps * results[algo]["wall_time"]
             plt.errorbar(
                 x=time_steps,
                 y=results[algo]["quality"],
@@ -103,6 +107,8 @@ def image_quality_vs_time_plot(
                 )
         else:
             time_steps = np.array(results[algo]["num_iter"])
+            time_steps = time_steps * results[algo]["wall_time"] / 32
+            logger.warning("Assumed wall_time is for 32 iterations.")
             plt.errorbar(
                 x=time_steps,
                 y=results[algo]["quality"],
@@ -111,10 +117,12 @@ def image_quality_vs_time_plot(
             )
 
     plt.ylim([0, 1])
+    plt.xlim([0, 50000])
 
     plt.legend(results.keys())
-    plt.xlabel('iterations')
+    plt.xlabel('wall time [s]')
     plt.ylabel('MS-SSIM Index')
+    plt.title(os.path.dirname(os.path.realpath(plot_name)))
 
     plt.savefig(plot_name, dpi=600, pad_inches=0.0)
 
@@ -159,6 +167,40 @@ def scrape_image_quality(algo_folder):
         "error": error,
         "num_iter": num_iter,
     }
+
+
+def scrape_algorithm_times(json_filename):
+    """Scrape wall times from the timemory json.
+
+    Search for timer tags containing "algorithm='{algorithm}'" then extract
+    the wall times. Return a new dictionary of dictionaries
+    where the first key is the algorithm name and the second key is "wall time".
+    """
+    with open(json_filename, "r") as file:
+        data = json.load(file)
+
+    results = {}
+
+    for timer in data["ranks"][0]["manager"]["timers"]:
+        # only choose timer with "algorithm in the tag
+        if "algorithm" in timer["timer.tag"]:
+            # find the part that contains the algorithm name
+            m = re.search("'.*'", timer["timer.tag"])
+            # strip off the single quotes
+            clean_tag = m.group(0).strip("'")
+            # convert microseconds to seconds
+            wtime = timer["timer.ref"]["wall_elapsed"] * 1e-6
+
+            print("{tag:>10} had a wall time of {wt:10.3g} s".format(
+                tag=clean_tag,
+                wt=wtime,
+            ))
+
+            results[clean_tag] = {
+                "wall_time": wtime,
+            }
+
+    return results
 
 
 if __name__ == '__main__':
