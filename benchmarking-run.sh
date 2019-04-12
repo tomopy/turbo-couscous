@@ -5,7 +5,7 @@ python -Om benchmarking.project \
   --noise \
   --trials 32 \
   --width 1446 \
-  --num_angles 1500 \
+  --num-angles 1500 \
   --phantom peppers \
 
 python -Om benchmarking.reconstruct \

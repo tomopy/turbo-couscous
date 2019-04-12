@@ -1,4 +1,5 @@
-"""Reconstruct phantoms."""
+"""A CLI for reconstructing simulated data using TomoPy and rating the quality
+of the reconstructions using XDesign."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
@@ -13,6 +14,73 @@ import matplotlib.pyplot as plt
 import xdesign as xd
 
 logger = logging.getLogger(__name__)
+
+
+@click.command()
+@click.option(
+    '-p',
+    '--phantom',
+    default='peppers',
+    help='Name of a phantom.',
+)
+@click.option(
+    '-i',
+    '--num-iter',
+    default=1,
+    help='Number of iterations between saves.',
+    type=int,
+)
+@click.option(
+    '-m',
+    '--max-iter',
+    default=5,
+    help='Total number of iterations.',
+    type=int,
+)
+@click.option(
+    '-o',
+    '--output-dir',
+    default=os.path.join('local', tomopy.__version__),
+    help='Folder to put data inside',
+    type=click.Path(exists=False),
+)
+@click.option(
+    '--ncore',
+    default=1,
+    help='Number of CPU cores to use,',
+    type=int,
+)
+def main(phantom, num_iter, max_iter, output_dir, ncore):
+    """Reconstruct data using TomoPy."""
+    data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
+    dynamic_range = np.max(data['original'])
+    # TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad',
+    # 'pml_hybrid', 'pml_quad'
+    for params in [
+        {'algorithm': 'gridrec'},
+        {'algorithm': 'art', 'num_iter': num_iter},
+        {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
+        {'algorithm': 'gridrec', 'filter_name': None},
+        {'algorithm': 'gridrec', 'filter_name': 'none'},
+        {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+        {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+        {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+        {'algorithm': 'gridrec', 'filter_name': 'hann'},
+        {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+        {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+        {'algorithm': 'gridrec', 'filter_name': 'shepp'},
+        {'algorithm': 'mlem', 'num_iter': num_iter},
+        {'algorithm': 'sirt', 'num_iter': num_iter},
+        {'algorithm': 'tv', 'num_iter': num_iter},
+    ]:  # yapf: disable
+        params.update({'ncore': ncore})
+        reconstruct(
+            data,
+            params,
+            dynamic_range=dynamic_range,
+            max_iter=max_iter,
+            output_dir=output_dir,
+        )
 
 
 def reconstruct(
@@ -114,75 +182,6 @@ def reconstruct(
             logger.info("Early termination at {} iterations".format(i))
             break
         peak_quality = max(np.mean(msssim), peak_quality)
-
-
-@click.command()
-@click.option(
-    '-p',
-    '--phantom',
-    default='peppers',
-    help='Name of a phantom.',
-)
-@click.option(
-    '-i',
-    '--num-iter',
-    default=1,
-    help='Number of iterations between saves.',
-    type=int,
-)
-@click.option(
-    '-m',
-    '--max-iter',
-    default=5,
-    help='Total number of iterations.',
-    type=int,
-)
-@click.option(
-    '-o',
-    '--output-dir',
-    default=os.path.join('local', tomopy.__version__),
-    help='Folder to put data inside',
-    type=click.Path(exists=False),
-)
-@click.option(
-    '--ncore',
-    default=1,
-    help='Number of CPU cores to use,',
-    type=int,
-)
-def main(phantom, num_iter, max_iter, output_dir, ncore):
-    """Reconstruct data using TomoPy."""
-    data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
-    dynamic_range = np.max(data['original'])
-    for params in [
-        {'algorithm': 'gridrec'},
-        {'algorithm': 'art', 'num_iter': num_iter},
-        {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
-        {'algorithm': 'gridrec', 'filter_name': None},
-        {'algorithm': 'gridrec', 'filter_name': 'none'},
-        {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
-        {'algorithm': 'gridrec', 'filter_name': 'cosine'},
-        {'algorithm': 'gridrec', 'filter_name': 'hamming'},
-        {'algorithm': 'gridrec', 'filter_name': 'hann'},
-        {'algorithm': 'gridrec', 'filter_name': 'parzen'},
-        {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
-        {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-        {'algorithm': 'mlem', 'num_iter': num_iter},
-        {'algorithm': 'sirt', 'num_iter': num_iter},
-        {'algorithm': 'tv', 'num_iter': num_iter},
-    ]:  # yapf: disable
-        params.update({'ncore': ncore})
-        reconstruct(
-            data,
-            params,
-            dynamic_range=dynamic_range,
-            max_iter=max_iter,
-            output_dir=output_dir,
-        )
-
-
-# TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad', 'pml_hybrid',
-# 'pml_quad'
 
 if __name__ == '__main__':
     main()
