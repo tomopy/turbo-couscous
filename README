@@ -1,0 +1,23 @@
+This module generates image quality benchmarks for a emission tomography
+simulation with optional Poisson noise using TomoPy.
+
+You can run the benchmark using the provided run-benchmarking.sh. The benchmarks
+are divded into three main scripts. project.py which will generate the simulated
+data. reconstruct.py which will use one dataset to do reconstruction for all
+of the TomoPy reconstruction algorithms and rate the results using MS-SSIM.
+summarize.py which will collect the image quality data into a JSON formatted
+text file and pull in data from the TiMemory benchmarks if they are in the
+same folders.
+
+The default settings (running without options) should run a series of benchmark
+tests as follows:
+
+* Use phantom "peppers"
+* Use phantom 32 x 2048 x 2048 pixels where each slice is an independent noisy trial
+* Reconstruct with all the algorithms including the various filters for gridrec and fbp
+* Use 16 cores (it's a quality benchmark, so we can use many cores and it doesn't matter)
+* Report quality measures every 5 iterations for up to 300 iterations (terminating
+early if the image quality does not improve by 0.01 MS-SSIM at each iteration)
+* Generate a JSON summary of the quality measures as a function of iterations (or
+time if TiMemory data is available).
+* Generate a SVG line plot of the MS-SSIM quality versus time or iterations
