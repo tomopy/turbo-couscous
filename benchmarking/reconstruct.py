@@ -51,28 +51,75 @@ logger = logging.getLogger(__name__)
     type=int,
 )
 def main(phantom, num_iter, max_iter, output_dir, ncore):
-    """Reconstruct data using TomoPy."""
+    """Reconstruct data using TomoPy.
+
+    Chooses which algorithms to run based on the name of the conda environment.
+    Expects three environments: astra, 1.1. and 1.5 which has the tomopy
+    API of those versions.
+    """
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
-    # TODO: Add 'fbp', 'bart', 'osem', 'ospml_hybrid', 'ospml_quad',
-    # 'pml_hybrid', 'pml_quad'
-    for params in [
-        {'algorithm': 'gridrec'},
-        {'algorithm': 'art', 'num_iter': num_iter},
-        {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
-        {'algorithm': 'gridrec', 'filter_name': None},
-        {'algorithm': 'gridrec', 'filter_name': 'none'},
-        {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
-        {'algorithm': 'gridrec', 'filter_name': 'cosine'},
-        {'algorithm': 'gridrec', 'filter_name': 'hamming'},
-        {'algorithm': 'gridrec', 'filter_name': 'hann'},
-        {'algorithm': 'gridrec', 'filter_name': 'parzen'},
-        {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
-        {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-        {'algorithm': 'mlem', 'num_iter': num_iter},
-        {'algorithm': 'sirt', 'num_iter': num_iter},
-        {'algorithm': 'tv', 'num_iter': num_iter},
-    ]:  # yapf: disable
+    if 'astra' in os.environ['CONDA_PREFIX']:
+        import astra
+        parameters = [
+            {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA'}},
+            {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options': {'proj_type': 'cuda', 'method': 'SIRT_CUDA', 'num_iter': num_iter}},
+            {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options': {'proj_type': 'cuda', 'method': 'CGLS_CUDA', 'num_iter': num_iter}},
+            {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options': {'proj_type': 'cuda', 'method': 'EM_CUDA', 'num_iter': num_iter}},
+            {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options': {'proj_type': 'cuda', 'method': 'SART_CUDA', 'num_iter': num_iter}},
+        ]
+    elif '1.1' in os.environ['CONDA_PREFIX']:
+        parameters = [
+            {'algorithm': 'art', 'num_iter': num_iter},
+            {'algorithm': 'bart', 'num_iter': num_iter},
+            {'algorithm': 'fbp'},
+            {'algorithm': 'fbp', 'filter_name': None},
+            {'algorithm': 'fbp', 'filter_name': 'none'},
+            {'algorithm': 'fbp', 'filter_name': 'butterworth'},
+            {'algorithm': 'fbp', 'filter_name': 'cosine'},
+            {'algorithm': 'fbp', 'filter_name': 'hamming'},
+            {'algorithm': 'fbp', 'filter_name': 'hann'},
+            {'algorithm': 'fbp', 'filter_name': 'parzen'},
+            {'algorithm': 'fbp', 'filter_name': 'ramlak'},
+            {'algorithm': 'fbp', 'filter_name': 'shepp'},
+            {'algorithm': 'gridrec'},
+            {'algorithm': 'gridrec', 'filter_name': None},
+            {'algorithm': 'gridrec', 'filter_name': 'none'},
+            {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+            {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+            {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+            {'algorithm': 'gridrec', 'filter_name': 'hann'},
+            {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+            {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+            {'algorithm': 'gridrec', 'filter_name': 'shepp'},
+            {'algorithm': 'mlem', 'num_iter': num_iter},
+            {'algorithm': 'osem', 'num_iter': num_iter},
+            {'algorithm': 'ospml_hybrid', 'num_iter': num_iter},
+            {'algorithm': 'ospml_quad', 'num_iter': num_iter},
+            {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
+            {'algorithm': 'pml_quad', 'num_iter': num_iter},
+            {'algorithm': 'sirt', 'num_iter': num_iter},
+        ]
+    elif '1.5' in os.environ['CONDA_PREFIX']:
+        parameters = [
+            {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'tv', 'num_iter': num_iter},
+        ]
+    else:
+        raise ValueError("Test environment not recognized.")
+    for params in parameters:  # yapf: disable
         params.update({'ncore': ncore})
         reconstruct(
             data,
@@ -94,7 +141,9 @@ def reconstruct(
 ):
     """Reconstruct data using given params.
 
-    Resumes from previous reconstruction if exact files already exist.
+    Resume from previous reconstruction if exact files already exist.
+    Save files to file named by as:
+    output_dir/algorithm/algorithm.filter_name.device.INTERPOLATION.[npz jpg]
 
     Parameters
     ----------
@@ -118,23 +167,26 @@ def reconstruct(
         amount.
     """
     logger.info('{}'.format(params))
-    base_path = os.path.join(output_dir, phantom, params['algorithm'])
+    if params['algorithm'] is tomopy.astra:
+        algorithm = params['options']['method']
+    else:
+        algorithm = params['algorithm']
+    base_path = os.path.join(output_dir, phantom, algorithm)
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
     # initial reconstruction guess; use defaults unique to each algorithm
     recon = None
+    peak_quality = 0
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
-    peak_quality = 0
-    for i in range(1, end + step, step):
-        # name the output file
-        if 'filter_name' in params:
-            filename = os.path.join(
-                base_path, "{}.{}.{:03d}".format(params['algorithm'],
-                                                 params['filter_name'], i))
-        else:
-            filename = os.path.join(base_path, "{}.{:03d}".format(
-                params['algorithm'], i))
+    for i in range(step, end + step, step):
+        # name the output file by combining the algorithm name with some
+        # important (key) input parameters
+        filename = algorithm
+        for key_param in ['filter_name', 'device', 'interpolation']:
+            if key_param in params:
+                filename = ".".join([filename, params[key_param]])
+        filename = os.path.join(base_path, "{}.{:03d}".format(filename, i))
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             existing_data = np.load(filename + '.npz')
@@ -148,7 +200,7 @@ def reconstruct(
                     theta=data['angles'],
                     **params,
                 )
-            except ValueError as e:
+            except Exception as e:
                 logger.warn(e)
                 return
             # compute quality metrics

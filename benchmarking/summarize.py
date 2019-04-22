@@ -90,7 +90,7 @@ def image_quality_vs_time_plot(
     plt.figure(dpi=600)
 
     for algo in results.keys():
-        if algo in ['gridrec', 'fbp']:
+        if algo.lower() in ['gridrec', 'fbp']:
             # These methods are categorical instead of sequential
             time_steps = np.ones(len(results[algo]["num_iter"]))
             time_steps = time_steps * results[algo]["wall_time"]
