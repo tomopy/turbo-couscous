@@ -120,7 +120,10 @@ def main(phantom, num_iter, max_iter, output_dir, ncore):
     else:
         raise ValueError("Test environment not recognized.")
     for params in parameters:  # yapf: disable
-        params.update({'ncore': ncore})
+        if 'device' in params and params['device'] is 'gpu':
+            params.update({'ncore': 1, 'pool_size': ncore})
+        else:
+            params.update({'ncore': ncore})
         reconstruct(
             data,
             params,
