@@ -4,6 +4,7 @@ of the reconstructions using XDesign."""
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+import ast
 import os.path
 import logging
 
@@ -47,10 +48,15 @@ logger = logging.getLogger(__name__)
 @click.option(
     '--ncore',
     default=16,
-    help='Number of CPU cores to use,',
+    help='Number of CPU cores to use',
     type=int,
 )
-def main(phantom, num_iter, max_iter, output_dir, ncore):
+@click.option(
+    '--parameters',
+    default=None,
+    help='Python List of Python Dict of tomopy parameters as string',
+)
+def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
     """Reconstruct data using TomoPy.
 
     Chooses which algorithms to run based on the name of the conda environment.
@@ -59,7 +65,9 @@ def main(phantom, num_iter, max_iter, output_dir, ncore):
     """
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
-    if 'astra' in os.environ['CONDA_PREFIX']:
+    if parameters is not None:
+        parameters = ast.literal_eval(parameters)
+    elif 'astra' in os.environ['CONDA_PREFIX']:
         import astra
         parameters = [
             {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA'}},
