@@ -199,7 +199,7 @@ def reconstruct(
         filename = algorithm
         for key_param in ['filter_name', 'device', 'interpolation']:
             if key_param in params:
-                filename = ".".join([filename, params[key_param]])
+                filename = ".".join([filename, str(params[key_param])])
         filename = os.path.join(base_path, "{}.{:03d}".format(filename, i))
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
