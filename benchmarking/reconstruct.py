@@ -61,7 +61,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
     """Reconstruct data using TomoPy.
 
     Chooses which algorithms to run based on the name of the conda environment.
-    Expects three environments: astra, 1.1. and 1.5 which has the tomopy
+    Expects three environments: astra, 1.1, and 1.5 which has the tomopy
     API of those versions.
     """
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
@@ -82,15 +82,15 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'art', 'num_iter': num_iter},
             {'algorithm': 'bart', 'num_iter': num_iter},
             {'algorithm': 'fbp'},
-            {'algorithm': 'fbp', 'filter_name': None},
-            {'algorithm': 'fbp', 'filter_name': 'none'},
-            {'algorithm': 'fbp', 'filter_name': 'butterworth'},
-            {'algorithm': 'fbp', 'filter_name': 'cosine'},
-            {'algorithm': 'fbp', 'filter_name': 'hamming'},
-            {'algorithm': 'fbp', 'filter_name': 'hann'},
-            {'algorithm': 'fbp', 'filter_name': 'parzen'},
-            {'algorithm': 'fbp', 'filter_name': 'ramlak'},
-            {'algorithm': 'fbp', 'filter_name': 'shepp'},
+            # {'algorithm': 'fbp', 'filter_name': None},
+            # {'algorithm': 'fbp', 'filter_name': 'none'},
+            # {'algorithm': 'fbp', 'filter_name': 'butterworth'},
+            # {'algorithm': 'fbp', 'filter_name': 'cosine'},
+            # {'algorithm': 'fbp', 'filter_name': 'hamming'},
+            # {'algorithm': 'fbp', 'filter_name': 'hann'},
+            # {'algorithm': 'fbp', 'filter_name': 'parzen'},
+            # {'algorithm': 'fbp', 'filter_name': 'ramlak'},
+            # {'algorithm': 'fbp', 'filter_name': 'shepp'},
             {'algorithm': 'gridrec'},
             {'algorithm': 'gridrec', 'filter_name': None},
             {'algorithm': 'gridrec', 'filter_name': 'none'},
