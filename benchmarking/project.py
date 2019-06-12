@@ -63,7 +63,7 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
     """
     simdata_file = os.path.join(output_dir, phantom, 'simulated_data.npz')
     if os.path.isfile(simdata_file):
-        logger.warn('Simulated data already exists!')
+        logger.warning('Simulated data already exists!')
         return
     original = tomopy.peppers(width)
     os.makedirs(os.path.join(output_dir, phantom), exist_ok=True)

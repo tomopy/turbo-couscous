@@ -214,7 +214,7 @@ def reconstruct(
                     **params,
                 )
             except Exception as e:
-                logger.warn(e)
+                logger.warning(e)
                 return
             # compute quality metrics
             msssim = np.empty(len(recon))
@@ -247,6 +247,7 @@ def reconstruct(
             logger.info("Early termination at {} iterations".format(i))
             break
         peak_quality = max(np.mean(msssim), peak_quality)
+
 
 if __name__ == '__main__':
     main()
