@@ -87,7 +87,7 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
         sinogram = np.random.poisson(sinogram)
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
-    np.savez(simdata_file, original=original, angles=angles, sinogram=sinogram)
+    np.savez_compressed(simdata_file, original=original, angles=angles, sinogram=sinogram)
 
 
 def fft_order(x):

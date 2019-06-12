@@ -253,7 +253,7 @@ def reconstruct(
                 )
             os.makedirs(base_path, exist_ok=True)
             # save all information
-            np.savez(
+            np.savez_compressed(
                 filename + '.npz',
                 recon=recon,
                 msssim=msssim,
