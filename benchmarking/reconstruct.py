@@ -115,15 +115,15 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
             {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
             {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
             {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
             {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             {'algorithm': 'tv', 'num_iter': num_iter},
         ]
     else:
@@ -210,12 +210,32 @@ def reconstruct(
         else:
             try:
                 start = time.perf_counter()
-                recon = tomopy.recon(
-                    init_recon=recon,
-                    tomo=data['sinogram'],
-                    theta=data['angles'],
-                    **params,
-                )
+                # Do reconstruction in chunks because GPU memory is small
+                # FIXME: It's not fair to include all of this GPU memory
+                # allocation and destruction in the wall_time. In practice,
+                # you wouldn't check the answer every few iterations?
+                if 'device' in params and params['device'] == 'gpu':
+                    chunk_size = 8
+                    if recon is None:
+                        shape = data['sinogram'].shape
+                        recon = np.empty((shape[1], shape[2], shape[2]))
+                        init_recon = None
+                    else:
+                        init_recon = recon[i:i+chunk_size]
+                    for i in range(0, 32, chunk_size):
+                        recon[i:i+chunk_size] = tomopy.recon(
+                            init_recon=init_recon,
+                            tomo=data['sinogram'][:, i:i+chunk_size, :],
+                            theta=data['angles'],
+                            **params,
+                        )
+                else:
+                    recon = tomopy.recon(
+                        init_recon=recon,
+                        tomo=data['sinogram'],
+                        theta=data['angles'],
+                        **params,
+                    )
                 stop = time.perf_counter()
                 wall_time = stop - start
             except Exception as e:
