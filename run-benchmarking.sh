@@ -2,7 +2,7 @@
 set -e
 
 python -Om benchmarking.project \
-  --noise \
+  --noise 500 \
   --trials 32 \
   --width 1446 \
   --num-angles 1500 \

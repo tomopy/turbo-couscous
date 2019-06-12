@@ -45,8 +45,8 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-n',
     '--noise',
+    default=0,
     help='Whether to add noise.',
-    is_flag=True,
 )
 @click.option(
     '-o',
@@ -76,15 +76,16 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
         vmin=0,
         vmax=1.1 * dynam_range,
     )
-    if trials > 1:
-        original = np.tile(original, reps=(trials, 1, 1))
     angles = tomopy.angles(num_angles)
     # Reorder projections optimally
     p = multilevel_order(len(angles)).astype(np.int32)
     angles = angles[p, ...]
     sinogram = tomopy.project(original, angles, pad=True)
-    if noise:
-        sinogram = np.random.poisson(sinogram)
+    if trials > 1:
+        original = np.tile(original, reps=(trials, 1, 1))
+        sinogram = np.tile(sinogram, reps=(1, trials, 1))
+    if noise > 0:
+        sinogram = np.random.poisson(sinogram / noise) * noise
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez_compressed(simdata_file, original=original, angles=angles, sinogram=sinogram)
