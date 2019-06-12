@@ -5,8 +5,9 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import ast
-import os.path
 import logging
+import os.path
+import time
 
 import click
 import tomopy
@@ -205,14 +206,18 @@ def reconstruct(
             existing_data = np.load(filename + '.npz')
             recon = existing_data['recon']
             msssim = existing_data['msssim']
+            wall_time = existing_data['time']
         else:
             try:
+                start = time.perf_counter()
                 recon = tomopy.recon(
                     init_recon=recon,
                     tomo=data['sinogram'],
                     theta=data['angles'],
                     **params,
                 )
+                stop = time.perf_counter()
+                wall_time = stop - start
             except Exception as e:
                 logger.warning(e)
                 return
@@ -232,6 +237,7 @@ def reconstruct(
                 filename + '.npz',
                 recon=recon,
                 msssim=msssim,
+                time=wall_time
             )
             plt.imsave(
                 filename + '.jpg',
@@ -241,8 +247,8 @@ def reconstruct(
                 vmin=0,
                 vmax=1.1 * dynamic_range,
             )
-        logger.info("{} : ms-ssim = {:05.3f}".format(filename,
-                                                     np.mean(msssim)))
+        logger.info("{} : ms-ssim = {:05.3f} : time = {:05.3f}s".format(
+            filename, np.mean(msssim), wall_time))
         if i > 1 and np.mean(msssim) - peak_quality < term_crit:
             logger.info("Early termination at {} iterations".format(i))
             break

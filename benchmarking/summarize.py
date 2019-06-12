@@ -32,11 +32,14 @@ logger = logging.getLogger(__name__)
     help='Folder to put data inside',
     type=click.Path(exists=False),
 )
-def summarize(phantom, output_dir, summary_file=None):
+@click.option('-v', '--verbose', is_flag=True)
+def summarize(phantom, output_dir, summary_file=None, verbose=False):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
     """
+    if verbose:
+        logger.setLevel(level=logging.DEBUG)
     base_path = os.path.join(output_dir, phantom)
     # Load data from file or make empty dictionary
     if summary_file is None:
@@ -51,12 +54,16 @@ def summarize(phantom, output_dir, summary_file=None):
     # Search the phantom folder for results and summarize them
     for folder in glob.glob(os.path.join(base_path, "*")):
         if os.path.isdir(folder):
-            all_results.update(
-                scrape_algorithm_times(
-                    os.path.join(folder, 'run_tomopy.json')))
+            # Now using python wall times instead of pyctest times
+            # all_results.update(
+            #     scrape_algorithm_times(
+            #         os.path.join(folder, 'run_tomopy.json')))
             algo_results = scrape_image_quality(folder)
             algo = os.path.basename(folder)
-            all_results[algo].update(algo_results)
+            if algo in all_results:
+                all_results[algo].update(algo_results)
+            else:
+                all_results[algo] = algo_results
             logger.info("Found results for {}".format(algo))
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
@@ -93,7 +100,10 @@ def image_quality_vs_time_plot(
         if algo.lower() in ['gridrec', 'fbp']:
             # These methods are categorical instead of sequential
             time_steps = np.ones(len(results[algo]["num_iter"]))
-            time_steps = time_steps * results[algo]["wall_time"]
+            xlabel = "number of iterations"
+            if "wall_time" in results[algo]:
+                time_steps = results[algo]["wall_time"]
+                xlabel = "wall time [s]"
             plt.errorbar(
                 x=time_steps,
                 y=results[algo]["quality"],
@@ -108,8 +118,10 @@ def image_quality_vs_time_plot(
                 )
         else:
             time_steps = np.array(results[algo]["num_iter"])
-            time_steps = time_steps * results[algo]["wall_time"] / 32
-            logger.warning("Assumed wall_time is for 32 iterations.")
+            xlabel = "number of iterations"
+            if "wall_time" in results[algo]:
+                time_steps = results[algo]["wall_time"]
+                xlabel = "wall time [s]"
             plt.errorbar(
                 x=time_steps,
                 y=results[algo]["quality"],
@@ -118,10 +130,10 @@ def image_quality_vs_time_plot(
             )
 
     plt.ylim([0, 1])
-    plt.xlim([0, 50000])
+    plt.xlim([0, 50000])  # approx. 14 hours
 
-    plt.legend(results.keys())
-    plt.xlabel('wall time [s]')
+    plt.legend(results.keys(), ncol=3)
+    plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
     plt.title(os.path.dirname(os.path.realpath(plot_name)))
 
@@ -142,19 +154,23 @@ def scrape_image_quality(algo_folder):
     quality = list()
     error = list()
     num_iter = list()
+    wall_time = list()
 
     for file in glob.glob(os.path.join(algo_folder, "*.npz")):
         data = np.load(file)
-        # get the iteration number from the filename sans extension
-        i = os.path.basename(file).split(".")[1]
-        try:
+        filename = os.path.basename(file)
+        if "gridrec" in filename or "fbp" in filename:
+            # get the filter name from the filename sans extension
+            i = filename.split(".")[-3]
+        else:
+            # get the iteration number from the filename sans extension
+            i = filename.split(".")[-2]
             i = int(i)
-        except ValueError:
-            pass  # Gridrec and FBP have filter names instead
         try:
             quality.append(np.mean(data['msssim']))
             error.append(np.std(data['msssim']))
             num_iter.append(i)
+            wall_time.append(data['time'])
         except KeyError:
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
@@ -162,11 +178,13 @@ def scrape_image_quality(algo_folder):
     logger.debug("num_iter: {}".format(num_iter))
     logger.debug("quality: {}".format(quality))
     logger.debug("error: {}".format(error))
+    logger.debug("wall_time: {}".format(wall_time))
 
     return {
         "quality": quality,
         "error": error,
         "num_iter": num_iter,
+        "wall_time": list(np.cumsum(wall_time)),
     }
 
 
@@ -177,10 +195,13 @@ def scrape_algorithm_times(json_filename):
     the wall times. Return a new dictionary of dictionaries
     where the first key is the algorithm name and the second key is "wall time".
     """
-    with open(json_filename, "r") as file:
-        data = json.load(file)
-
     results = {}
+
+    if os.path.isfile(json_filename):
+        with open(json_filename, "r") as file:
+            data = json.load(file)
+    else:
+        return results
 
     for timer in data["ranks"][0]["manager"]["timers"]:
         # only choose timer with "algorithm in the tag
