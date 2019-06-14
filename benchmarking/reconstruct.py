@@ -219,16 +219,21 @@ def reconstruct(
                     if recon is None:
                         shape = data['sinogram'].shape
                         recon = np.empty((shape[1], shape[2], shape[2]))
-                        init_recon = None
+                        for j in range(0, 32, chunk_size):
+                            recon[j:j+chunk_size] = tomopy.recon(
+                                init_recon=None,
+                                tomo=data['sinogram'][:, j:j+chunk_size, :],
+                                theta=data['angles'],
+                                **params,
+                            )
                     else:
-                        init_recon = recon[i:i+chunk_size]
-                    for i in range(0, 32, chunk_size):
-                        recon[i:i+chunk_size] = tomopy.recon(
-                            init_recon=init_recon,
-                            tomo=data['sinogram'][:, i:i+chunk_size, :],
-                            theta=data['angles'],
-                            **params,
-                        )
+                        for j in range(0, 32, chunk_size):
+                            recon[j:j+chunk_size] = tomopy.recon(
+                                init_recon=recon[j:j+chunk_size],
+                                tomo=data['sinogram'][:, j:j+chunk_size, :],
+                                theta=data['angles'],
+                                **params,
+                            )
                 else:
                     recon = tomopy.recon(
                         init_recon=recon,
