@@ -11,8 +11,9 @@ python -Om benchmarking.project \
 python -Om benchmarking.reconstruct \
   --ncore 16 \
   --num-iter 5 \
-  --max-iter 300 \
+  --max-iter 50 \
   --phantom peppers \
 
 python -Om benchmarking.summarize \
   --phantom peppers \
+  --trials 32 \

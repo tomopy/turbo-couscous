@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
     '-t',
     '--trials',
     default=32,
-    help='Number of phantom repeitions.',
+    help='Number of phantom repetitions.',
     type=int,
 )
 @click.option(

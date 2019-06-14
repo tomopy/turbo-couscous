@@ -32,8 +32,15 @@ logger = logging.getLogger(__name__)
     help='Folder to put data inside',
     type=click.Path(exists=False),
 )
+@click.option(
+    '-t',
+    '--trials',
+    default=1,
+    help='Number of phantom repetitions.',
+    type=int,
+)
 @click.option('-v', '--verbose', is_flag=True)
-def summarize(phantom, output_dir, summary_file=None, verbose=False):
+def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
@@ -68,12 +75,13 @@ def summarize(phantom, output_dir, summary_file=None, verbose=False):
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
-    image_quality_vs_time_plot(summary_plot, all_results)
+    image_quality_vs_time_plot(summary_plot, all_results, trials)
 
 
 def image_quality_vs_time_plot(
         plot_name,
         results,
+        trials=1,
 ):
     """Create a lineplot with errorbars of image quality vs time.
 
@@ -103,34 +111,43 @@ def image_quality_vs_time_plot(
             xlabel = "number of iterations"
             if "wall_time" in results[algo]:
                 time_steps = results[algo]["wall_time"]
-                xlabel = "wall time [s]"
+                xlabel = "wall time per slice"
             plt.errorbar(
-                x=time_steps,
+                x=np.array(time_steps) / trials,
                 y=results[algo]["quality"],
                 yerr=results[algo]["error"],
                 fmt='o',
             )
             for i, filter_name in enumerate(results[algo]["num_iter"]):
+                dataxy = np.array([time_steps[i] / trials, results[algo]["quality"][i]])
                 plt.annotate(
                     filter_name,
-                    (time_steps[i], results[algo]["quality"][i]),
-                    va='center',
+                    xy=dataxy,
+                    xytext=dataxy,
+                    # va='center',
+                    # arrowprops={"arrowstyle": '-'},
                 )
         else:
             time_steps = np.array(results[algo]["num_iter"])
             xlabel = "number of iterations"
             if "wall_time" in results[algo]:
                 time_steps = results[algo]["wall_time"]
-                xlabel = "wall time [s]"
+                xlabel = "wall time per slice"
             plt.errorbar(
-                x=time_steps,
+                x=np.array(time_steps) / trials,
                 y=results[algo]["quality"],
                 yerr=results[algo]["error"],
                 fmt='-o',
             )
 
-    plt.ylim([0, 1])
-    plt.xlim([0, 50000])  # approx. 14 hours
+    plt.ylim([0, .5])
+    plt.semilogx(basex=2)
+    plt.xlim([60, 1*3600])  # 24 hours
+    plt.xticks(
+        [1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600,],# 3*3600, 6*3600, 12*3600, 24*3600],
+        ['1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
+    )
+
 
     plt.legend(results.keys(), ncol=3)
     plt.xlabel(xlabel)
@@ -159,12 +176,16 @@ def scrape_image_quality(algo_folder):
     for file in glob.glob(os.path.join(algo_folder, "*.npz")):
         data = np.load(file)
         filename = os.path.basename(file)
+        keywords = filename.split(".")
         if "gridrec" in filename or "fbp" in filename:
             # get the filter name from the filename sans extension
-            i = filename.split(".")[-3]
+            if len(keywords) > 3:
+                i = keywords[-3]
+            else:
+                i = ""
         else:
             # get the iteration number from the filename sans extension
-            i = filename.split(".")[-2]
+            i = keywords[-2]
             i = int(i)
         try:
             quality.append(np.mean(data['msssim']))
