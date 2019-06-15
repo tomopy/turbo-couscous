@@ -79,8 +79,6 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         ]
     elif '1.1' in os.environ['CONDA_PREFIX']:
         parameters = [
-            {'algorithm': 'gridrec'},
-            {'algorithm': 'gridrec', 'filter_name': None},
             {'algorithm': 'gridrec', 'filter_name': 'none'},
             {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
             {'algorithm': 'gridrec', 'filter_name': 'cosine'},
@@ -90,15 +88,6 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
             {'algorithm': 'fbp'},
-            # {'algorithm': 'fbp', 'filter_name': None},
-            # {'algorithm': 'fbp', 'filter_name': 'none'},
-            # {'algorithm': 'fbp', 'filter_name': 'butterworth'},
-            # {'algorithm': 'fbp', 'filter_name': 'cosine'},
-            # {'algorithm': 'fbp', 'filter_name': 'hamming'},
-            # {'algorithm': 'fbp', 'filter_name': 'hann'},
-            # {'algorithm': 'fbp', 'filter_name': 'parzen'},
-            # {'algorithm': 'fbp', 'filter_name': 'ramlak'},
-            # {'algorithm': 'fbp', 'filter_name': 'shepp'},
             {'algorithm': 'art', 'num_iter': num_iter},
             {'algorithm': 'bart', 'num_iter': num_iter},
             {'algorithm': 'mlem', 'num_iter': num_iter},
@@ -111,16 +100,24 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         ]
     elif '1.5' in os.environ['CONDA_PREFIX']:
         parameters = [
+            {'algorithm': 'gridrec', 'filter_name': 'none'},
+            {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+            {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+            {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+            {'algorithm': 'gridrec', 'filter_name': 'hann'},
+            {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+            {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+            {'algorithm': 'gridrec', 'filter_name': 'shepp'},
             {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
             # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
             # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
             # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
             # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
             # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
             # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
@@ -151,7 +148,7 @@ def reconstruct(
         max_iter=200,
         phantom='peppers',
         output_dir='',
-        term_crit=0.01,
+        term_crit=-0.05,
 ):
     """Reconstruct data using given params.
 
@@ -276,6 +273,7 @@ def reconstruct(
             filename, np.mean(msssim), wall_time))
         if i > 1 and np.mean(msssim) - peak_quality < term_crit:
             logger.info("Early termination at {} iterations".format(i))
+            print(np.mean(msssim) - peak_quality, term_crit)
             break
         peak_quality = max(np.mean(msssim), peak_quality)
 
