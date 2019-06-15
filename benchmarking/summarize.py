@@ -78,6 +78,28 @@ def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
     image_quality_vs_time_plot(summary_plot, all_results, trials)
 
 
+cm = plt.cm.plasma
+
+
+linestyles = {
+    'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
+    'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
+    'art': {'linestyle': '-', 'marker': 'o', 'color': cm(0.4)},
+    'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
+    'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
+             'fillstyle': 'none', },
+    'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65),
+             'fillstyle': 'none', },
+    'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
+    'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
+    'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
+    'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
+    'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
+    'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
+    'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
+}
+
+
 def image_quality_vs_time_plot(
         plot_name,
         results,
@@ -116,7 +138,7 @@ def image_quality_vs_time_plot(
                 x=np.array(time_steps) / trials,
                 y=results[algo]["quality"],
                 yerr=results[algo]["error"],
-                fmt='o',
+                **linestyles[algo.lower()],
             )
             for i, filter_name in enumerate(results[algo]["num_iter"]):
                 dataxy = np.array([time_steps[i] / trials, results[algo]["quality"][i]])
@@ -137,7 +159,7 @@ def image_quality_vs_time_plot(
                 x=np.array(time_steps) / trials,
                 y=results[algo]["quality"],
                 yerr=results[algo]["error"],
-                fmt='-o',
+                **linestyles[algo.lower()],
             )
 
     plt.ylim([0, .5])
@@ -149,7 +171,7 @@ def image_quality_vs_time_plot(
     )
 
 
-    plt.legend(results.keys(), ncol=3)
+    plt.legend(results.keys(), ncol=3, handlelength=3)
     plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
     plt.title(os.path.dirname(os.path.realpath(plot_name)))
