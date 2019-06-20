@@ -49,13 +49,18 @@ logger = logging.getLogger(__name__)
     help='Whether to add noise.',
 )
 @click.option(
+    '--emission/--transmission',
+    default=True,
+    help='Specify a transmission or emission noise model.',
+)
+@click.option(
     '-o',
     '--output-dir',
     default=os.path.join('local', tomopy.__version__),
     help='Folder to put data inside.',
     type=click.Path(exists=False),
 )
-def project(num_angles, width, phantom, trials, noise, output_dir):
+def project(num_angles, width, phantom, trials, noise, emission, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
@@ -79,16 +84,22 @@ def project(num_angles, width, phantom, trials, noise, output_dir):
     angles = tomopy.angles(num_angles)
     # Reorder projections optimally
     p = multilevel_order(len(angles)).astype(np.int32)
-    angles = angles[p, ...]
+    # angles = angles[p, ...]
     sinogram = tomopy.project(original, angles, pad=True)
     if trials > 1:
         original = np.tile(original, reps=(trials, 1, 1))
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
     if noise > 0:
-        sinogram = np.random.poisson(sinogram / noise) * noise
+        if emission is True:
+            sinogram = np.random.poisson(sinogram / noise) * noise
+        else:
+            norm = np.max(sinogram)
+            sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) * noise) / noise) * norm
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
-    np.savez_compressed(simdata_file, original=original, angles=angles, sinogram=sinogram)
+    np.savez_compressed(
+        simdata_file, original=original, angles=angles, sinogram=sinogram
+    )
 
 
 def fft_order(x):
