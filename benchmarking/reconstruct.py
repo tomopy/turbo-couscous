@@ -269,13 +269,15 @@ def reconstruct(
                 vmin=0,
                 vmax=1.1 * dynamic_range,
             )
+        if np.any(np.isnan(msssim)):
+            logger.error("Quality rating contains NaN!")
         logger.info("{} : ms-ssim = {:05.3f} : time = {:05.3f}s".format(
-            filename, np.mean(msssim), wall_time))
-        if i > 1 and np.mean(msssim) - peak_quality < term_crit:
+            filename, np.nanmean(msssim), wall_time))
+        if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
             logger.info("Early termination at {} iterations".format(i))
-            print(np.mean(msssim) - peak_quality, term_crit)
+            print(np.interpolationmean(msssim) - peak_quality, term_crit)
             break
-        peak_quality = max(np.mean(msssim), peak_quality)
+        peak_quality = max(np.nanmean(msssim), peak_quality)
 
 
 if __name__ == '__main__':
