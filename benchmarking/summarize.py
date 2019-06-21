@@ -164,10 +164,9 @@ def image_quality_vs_time_plot(
 
     plt.ylim([0, .5])
     plt.semilogx(basex=2)
-    plt.xlim([60, 1*3600])  # 24 hours
     plt.xticks(
-        [1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600,],# 3*3600, 6*3600, 12*3600, 24*3600],
-        ['1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
+        [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600,],# 3*3600, 6*3600, 12*3600, 24*3600],
+        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
     )
 
 
@@ -210,24 +209,35 @@ def scrape_image_quality(algo_folder):
             i = keywords[-2]
             i = int(i)
         try:
-            quality.append(np.mean(data['msssim']))
-            error.append(np.std(data['msssim']))
+            if np.any(np.isnan(data['msssim'])):
+                logger.error("Quality rating contains NaN!")
+            quality.append(np.nanmean(data['msssim']))
+            error.append(np.nanstd(data['msssim']))
             num_iter.append(i)
-            wall_time.append(data['time'])
+            wall_time.append(data['time'].item())
         except KeyError:
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
+
+    num_iter, quality, error, wall_time = zip(*sorted(zip(
+        num_iter, quality, error, wall_time)))
 
     logger.debug("num_iter: {}".format(num_iter))
     logger.debug("quality: {}".format(quality))
     logger.debug("error: {}".format(error))
     logger.debug("wall_time: {}".format(wall_time))
 
+    if "gridrec" in algo_folder or "fbp" in algo_folder:
+        pass
+    else:
+        # Don't add the time of the one iteration to the rest
+        wall_time = list(wall_time[0:1]) + list(np.cumsum(list(wall_time[1:])))
+
     return {
         "quality": quality,
         "error": error,
         "num_iter": num_iter,
-        "wall_time": list(np.cumsum(wall_time)),
+        "wall_time": wall_time,
     }
 
 
