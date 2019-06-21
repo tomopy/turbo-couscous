@@ -275,7 +275,7 @@ def reconstruct(
             filename, np.nanmean(msssim), wall_time))
         if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
             logger.info("Early termination at {} iterations".format(i))
-            print(np.interpolationmean(msssim) - peak_quality, term_crit)
+            print(np.nanmean(msssim) - peak_quality, term_crit)
             break
         peak_quality = max(np.nanmean(msssim), peak_quality)
 
