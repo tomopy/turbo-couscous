@@ -4,6 +4,7 @@ reconstruction time."""
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+from collections import defaultdict
 import glob
 import json
 import logging
@@ -79,25 +80,29 @@ def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
 
 
 cm = plt.cm.plasma
-
-
-linestyles = {
-    'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
-    'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
-    'art': {'linestyle': '-', 'marker': 'o', 'color': cm(0.4)},
-    'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
-    'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
-             'fillstyle': 'none', },
-    'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65),
-             'fillstyle': 'none', },
-    'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
-    'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
-    'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
-    'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
-    'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
-    'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
-    'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
-}
+linestyles = defaultdict(
+    lambda: {'linestyle': '-', 'marker': '', 'color': cm(0)},
+    {
+        'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
+        'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
+        'art': {'linestyle': '-', 'marker': 'o', 'color': cm(0.4)},
+        'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
+        'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
+                 'fillstyle': 'none', },
+        'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65),
+                 'fillstyle': 'none', },
+        'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
+        'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
+        'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
+        'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
+        'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
+        'lprec-grad': {'linestyle': '--', 'marker': 's', 'color': cm(0.6)},
+        'lprec-cg': {'linestyle': '--', 'marker': 's', 'color': cm(0.6),
+                     'fillstyle': 'none', },
+        'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
+        'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
+    },
+)
 
 
 def image_quality_vs_time_plot(
