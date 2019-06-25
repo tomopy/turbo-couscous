@@ -239,6 +239,8 @@ def reconstruct(
         algorithm = 'astra-' + params['options']['method'].lower()
     elif params['algorithm'] is tomopy.lprec:
         algorithm = 'lprec-' + params['lpmethod']
+    elif 'device' in params and params['device'] == 'gpu':
+        algorithm = params['algorithm'] + '_cuda'
     else:
         algorithm = params['algorithm']
     base_path = os.path.join(output_dir, phantom, algorithm)
