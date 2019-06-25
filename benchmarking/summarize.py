@@ -131,11 +131,11 @@ def image_quality_vs_time_plot(
     """
     plt.figure(dpi=600)
 
+    xlabel = "number of iterations"
     for algo in results.keys():
-        if algo.lower() in ['gridrec', 'fbp']:
+        if 'gridrec' in algo.lower() or 'fbp' in algo.lower():
             # These methods are categorical instead of sequential
             time_steps = np.ones(len(results[algo]["num_iter"]))
-            xlabel = "number of iterations"
             if "wall_time" in results[algo]:
                 time_steps = results[algo]["wall_time"]
                 xlabel = "wall time per slice"
@@ -156,7 +156,6 @@ def image_quality_vs_time_plot(
                 )
         else:
             time_steps = np.array(results[algo]["num_iter"])
-            xlabel = "number of iterations"
             if "wall_time" in results[algo]:
                 time_steps = results[algo]["wall_time"]
                 xlabel = "wall time per slice"
@@ -168,12 +167,12 @@ def image_quality_vs_time_plot(
             )
 
     plt.ylim([0, .5])
+    plt.xlim([0.1, 3600])
     plt.semilogx(basex=2)
     plt.xticks(
         [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600,],# 3*3600, 6*3600, 12*3600, 24*3600],
         ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
     )
-
 
     plt.legend(results.keys(), ncol=3, handlelength=3)
     plt.xlabel(xlabel)
