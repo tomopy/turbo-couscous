@@ -270,10 +270,10 @@ def reconstruct(
                 # FIXME: It's not fair to include all of this GPU memory
                 # allocation and destruction in the wall_time. In practice,
                 # you wouldn't check the answer every few iterations?
-                if 'device' in params and params['device'] == 'gpu':
-                    chunk_size = 8
+                chunk_size = 8
+                shape = data['sinogram'].shape
+                if shape[1] > chunk_size and 'device' in params and params['device'] == 'gpu':
                     if recon is None:
-                        shape = data['sinogram'].shape
                         recon = np.empty((shape[1], shape[2], shape[2]))
                         for j in range(0, 32, chunk_size):
                             recon[j:j+chunk_size] = tomopy.recon(
