@@ -83,23 +83,33 @@ cm = plt.cm.plasma
 linestyles = defaultdict(
     lambda: {'linestyle': '-', 'marker': '', 'color': cm(0)},
     {
+        # direct methods
         'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
         'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
-        'art': {'linestyle': '-', 'marker': 'o', 'color': cm(0.4)},
+        'astra-fbp_cuda': {'linestyle': '', 'marker': 'X', 'color': cm(0.1),
+                           'fillstyle': 'none', },
+        # iterative methods
+        'art': {'linestyle': '-', 'marker': '^', 'color': cm(0.4)},
         'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
-        'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
-                 'fillstyle': 'none', },
-        'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65),
-                 'fillstyle': 'none', },
+        'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5)},
+        'sirt_cuda': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
+                      'fillstyle': 'none', },
+        'astra-sirt_cuda': {'linestyle': '--', 'marker': '<', 'color': cm(0.5),
+                            'fillstyle': 'none', },
+
+        'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65)},
         'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
         'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
         'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
         'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
         'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
-        'lprec-grad': {'linestyle': '--', 'marker': 's', 'color': cm(0.6)},
+        # gradient methods
+        'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
+        'lprec-grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6),
+                       'fillstyle': 'none', },
         'lprec-cg': {'linestyle': '--', 'marker': 's', 'color': cm(0.6),
                      'fillstyle': 'none', },
-        'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
+
         'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
     },
 )
