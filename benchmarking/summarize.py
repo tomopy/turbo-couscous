@@ -241,7 +241,7 @@ def scrape_image_quality(algo_folder):
             quality.append(np.nanmean(data['msssim']))
             error.append(np.nanstd(data['msssim']))
             num_iter.append(i)
-            wall_time.append(data['time'].item())
+            wall_time.append(data['total_time'].item())
         except KeyError:
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
@@ -253,12 +253,6 @@ def scrape_image_quality(algo_folder):
     logger.debug("quality: {}".format(quality))
     logger.debug("error: {}".format(error))
     logger.debug("wall_time: {}".format(wall_time))
-
-    if "gridrec" in algo_folder or "fbp" in algo_folder:
-        pass
-    else:
-        # Don't add the time of the one iteration to the rest
-        wall_time = list(wall_time[0:1]) + list(np.cumsum(list(wall_time[1:])))
 
     return {
         "quality": quality,

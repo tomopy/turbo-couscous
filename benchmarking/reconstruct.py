@@ -241,6 +241,7 @@ def reconstruct(
     # initial reconstruction guess; use defaults unique to each algorithm
     recon = None
     peak_quality = 0
+    total_time = 0
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
     for i in range(step, end + step, step):
@@ -257,6 +258,7 @@ def reconstruct(
             recon = existing_data['recon']
             msssim = existing_data['msssim']
             wall_time = existing_data['time']
+            total_time += wall_time
         else:
             try:
                 start = time.perf_counter()
@@ -300,6 +302,7 @@ def reconstruct(
                     )
                 stop = time.perf_counter()
                 wall_time = stop - start
+                total_time += wall_time
             except Exception as e:
                 logger.warning(e)
                 return
@@ -315,11 +318,12 @@ def reconstruct(
                 )
             os.makedirs(base_path, exist_ok=True)
             # save all information
-            np.savez_compressed(
+            np.savez(
                 filename + '.npz',
                 recon=recon,
                 msssim=msssim,
-                time=wall_time
+                time=wall_time,
+                total_time=total_time,
             )
             plt.imsave(
                 filename + '.jpg',
@@ -331,11 +335,17 @@ def reconstruct(
             )
         if np.any(np.isnan(msssim)):
             logger.error("Quality rating contains NaN!")
-        logger.info("{} : ms-ssim = {:05.3f} : time = {:05.3f}s".format(
-            filename, np.nanmean(msssim), wall_time))
+        logger.info(
+            "{} : ms-ssim = {:05.3f} : "
+            "time = {:05.3f}s, total time = {:05.3f}s".format(
+                filename, np.nanmean(msssim), wall_time, total_time)
+            )
         if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
-            logger.info("Early termination at {} iterations".format(i))
-            print(np.nanmean(msssim) - peak_quality, term_crit)
+            logger.info(
+                "Early termination at {} iterations : "
+                "{:05.3f} < {:05.3f}".format(
+                    i, np.nanmean(msssim) - peak_quality, term_crit)
+                )
             break
         peak_quality = max(np.nanmean(msssim), peak_quality)
 
