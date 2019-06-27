@@ -95,14 +95,6 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             ]
         if float(tomopy.__version__[:3]) >= 1.5:
             parameters += [
-                {'algorithm': 'gridrec', 'filter_name': 'none'},
-                {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
-                {'algorithm': 'gridrec', 'filter_name': 'cosine'},
-                {'algorithm': 'gridrec', 'filter_name': 'hamming'},
-                {'algorithm': 'gridrec', 'filter_name': 'hann'},
-                {'algorithm': 'gridrec', 'filter_name': 'parzen'},
-                {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
-                {'algorithm': 'gridrec', 'filter_name': 'shepp'},
                 {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
                 # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
                 # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
@@ -158,13 +150,13 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         try:
             import lprec
             parameters += [
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'parzen'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'ramp'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'shepp-logan'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'cosine'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'cosine2'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hamming'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'parzen'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'ramp'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'shepp-logan'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'cosine'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'cosine2'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hamming'},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter},
@@ -239,11 +231,11 @@ def reconstruct(
         algorithm = 'astra-' + params['options']['method'].lower()
     elif params['algorithm'] is tomopy.lprec:
         algorithm = 'lprec-' + params['lpmethod']
-    elif 'device' in params and params['device'] == 'gpu':
-        algorithm = params['algorithm'] + '_cuda'
     else:
         algorithm = params['algorithm']
     base_path = os.path.join(output_dir, phantom, algorithm)
+    if 'device' in params and params['device'] == 'gpu':
+        base_path = base_path + '_cuda'
     # padding was added to keep square image in the field of view
     pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
     # initial reconstruction guess; use defaults unique to each algorithm
@@ -292,6 +284,13 @@ def reconstruct(
                                 theta=data['angles'],
                                 **params,
                             )
+                elif params['algorithm'] is tomopy.lprec:
+                    recon = tomopy.recon(
+                        init_recon=recon,
+                        tomo=data['sinogram'] / np.sqrt(1500 * 2048),
+                        theta=data['angles'],
+                        **params,
+                    )
                 else:
                     recon = tomopy.recon(
                         init_recon=recon,
