@@ -91,6 +91,8 @@ linestyles = defaultdict(
         # iterative methods
         'art': {'linestyle': '-', 'marker': '^', 'color': cm(0.4)},
         'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
+        'astra-sart_cuda': {'linestyle': '-', 'marker': '>', 'color': cm(0.45),
+                            'fillstyle': 'none', },
         'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5)},
         'sirt_cuda': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
                       'fillstyle': 'none', },
@@ -101,6 +103,10 @@ linestyles = defaultdict(
         'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
         'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
         'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
+        'lprec-em': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0),
+                     'fillstyle': 'none', },
+        'astra-em_cuda': {'linestyle': '--', 'marker': 'o', 'color': cm(1.0),
+                          'fillstyle': 'none', },
         'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
         'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
         # gradient methods
@@ -109,8 +115,16 @@ linestyles = defaultdict(
                        'fillstyle': 'none', },
         'lprec-cg': {'linestyle': '--', 'marker': 's', 'color': cm(0.6),
                      'fillstyle': 'none', },
+        'astra-cgls_cuda': {'linestyle': ':', 'marker': 's', 'color': cm(0.6),
+                            'fillstyle': 'none', },
 
         'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
+        'lprec-tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8),
+                     'fillstyle': 'none', },
+        'lprec-tve': {'linestyle': '--', 'marker': 'd', 'color': cm(0.8),
+                      'fillstyle': 'none', },
+        'lprec-tvl1': {'linestyle': ':', 'marker': 'd', 'color': cm(0.8),
+                       'fillstyle': 'none', },
     },
 )
 
@@ -139,8 +153,7 @@ def image_quality_vs_time_plot(
         npz files.
 
     """
-    plt.figure(dpi=600)
-
+    plt.figure(dpi=600, figsize=(8., 4.5))
     xlabel = "number of iterations"
     for algo in results.keys():
         if 'gridrec' in algo.lower() or 'fbp' in algo.lower():
