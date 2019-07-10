@@ -70,7 +70,13 @@ def project(num_angles, width, phantom, trials, noise, emission, output_dir):
     if os.path.isfile(simdata_file):
         logger.warning('Simulated data already exists!')
         return
-    original = tomopy.peppers(width)
+    if phantom == 'coins':
+        pad = (2048 - width) // 2
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.join(dirname, 'images/coins_2048.tif')
+        original = plt.imread(filename)[np.newaxis, pad:2048-pad, pad:2048-pad]
+    else:
+        original = tomopy.peppers(width)
     os.makedirs(os.path.join(output_dir, phantom), exist_ok=True)
     dynam_range = np.max(original)
     plt.imsave(

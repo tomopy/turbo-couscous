@@ -187,6 +187,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             dynamic_range=dynamic_range,
             max_iter=max_iter,
             output_dir=output_dir,
+            phantom=phantom,
         )
 
 
