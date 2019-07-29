@@ -72,6 +72,7 @@ def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
                 all_results[algo].update(algo_results)
             else:
                 all_results[algo] = algo_results
+            concat_recons(folder, base_path)
             logger.info("Found results for {}".format(algo))
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
@@ -203,6 +204,18 @@ def image_quality_vs_time_plot(
     plt.title(os.path.dirname(os.path.realpath(plot_name)))
 
     plt.savefig(plot_name, dpi=600, pad_inches=0.0)
+
+
+def concat_recons(algo_folder, base_path):
+    recons = list()
+    for file in glob.glob(os.path.join(algo_folder, "*.jpg")):
+        print(file)
+        recons.append(plt.imread(file))
+
+    # split into chunks of five images
+    for i in range(0, np.ceil(len(recons) / 5).astype(int)):
+        combined = np.concatenate(recons[5*i:min(len(recons), 5*(i+1))], axis=1)
+        plt.imsave(algo_folder + '-{}.jpg'.format(i), combined)
 
 
 def scrape_image_quality(algo_folder):
