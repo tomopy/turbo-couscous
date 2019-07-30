@@ -40,8 +40,14 @@ logger = logging.getLogger(__name__)
     help='Number of phantom repetitions.',
     type=int,
 )
+@click.option(
+    '--title',
+    default=None,
+    help='A title for the summary plot.',
+    type=str,
+)
 @click.option('-v', '--verbose', is_flag=True)
-def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
+def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=False):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
@@ -77,7 +83,7 @@ def summarize(phantom, output_dir, trials, summary_file=None, verbose=False):
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
-    image_quality_vs_time_plot(summary_plot, all_results, trials)
+    image_quality_vs_time_plot(summary_plot, all_results, trials, title)
 
 
 cm = plt.cm.plasma
@@ -134,6 +140,7 @@ def image_quality_vs_time_plot(
         plot_name,
         results,
         trials=1,
+        title=None,
 ):
     """Create a lineplot with errorbars of image quality vs time.
 
@@ -190,7 +197,7 @@ def image_quality_vs_time_plot(
                 **linestyles[algo.lower()],
             )
 
-    plt.ylim([0, .5])
+    plt.ylim([0, 1])
     plt.xlim([0.1, 3600])
     plt.semilogx(basex=2)
     plt.xticks(
@@ -198,11 +205,14 @@ def image_quality_vs_time_plot(
         ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
     )
 
-    plt.legend(results.keys(), ncol=3, handlelength=3)
+    plt.legend(results.keys(), ncol=1, handlelength=3, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
-    plt.title(os.path.dirname(os.path.realpath(plot_name)))
-
+    if title is None:
+        plt.title(os.path.dirname(os.path.realpath(plot_name)))
+    else:
+        plt.title(title)
+    plt.tight_layout()
     plt.savefig(plot_name, dpi=600, pad_inches=0.0)
 
 
@@ -249,13 +259,14 @@ def scrape_image_quality(algo_folder):
             i = keywords[-2]
             i = int(i)
         try:
-            if np.any(np.isnan(data['msssim'])):
+            msssim = np.load(file[:-3] + "msssim.npy")
+            if np.any(np.isnan(msssim)):
                 logger.error("Quality rating contains NaN!")
-            quality.append(np.nanmean(data['msssim']))
-            error.append(np.nanstd(data['msssim']))
+            quality.append(np.nanmean(msssim))
+            error.append(np.nanstd(msssim))
             num_iter.append(i)
             wall_time.append(data['total_time'].item())
-        except KeyError:
+        except (KeyError, FileNotFoundError):
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
 

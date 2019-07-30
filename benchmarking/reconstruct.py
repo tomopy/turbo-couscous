@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-m',
     '--max-iter',
-    default=300,
+    default=500,
     help='Total number of iterations.',
     type=int,
 )
@@ -194,10 +194,10 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
 def reconstruct(
         data,
         params,
-        dynamic_range=1.0,
-        max_iter=200,
-        phantom='peppers',
-        output_dir='',
+        dynamic_range,
+        max_iter,
+        phantom,
+        output_dir,
         term_crit=-0.05,
 ):
     """Reconstruct data using given params.
@@ -255,9 +255,10 @@ def reconstruct(
         filename = os.path.join(base_path, "{}.{:03d}".format(filename, i))
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
+            logger.info("{} exists!".format(filename))
             existing_data = np.load(filename + '.npz')
             recon = existing_data['recon']
-            msssim = existing_data['msssim']
+            # msssim = existing_data['msssim']
             wall_time = existing_data['time']
             total_time += wall_time
         else:
@@ -269,7 +270,10 @@ def reconstruct(
                 # you wouldn't check the answer every few iterations?
                 chunk_size = 8
                 shape = data['sinogram'].shape
-                if shape[1] > chunk_size and 'device' in params and params['device'] == 'gpu':
+                if (
+                    shape[1] > chunk_size and 'device' in params
+                    and params['device'] == 'gpu'
+                ):
                     if recon is None:
                         recon = np.empty((shape[1], shape[2], shape[2]))
                         for j in range(0, 32, chunk_size):
@@ -307,22 +311,11 @@ def reconstruct(
             except Exception as e:
                 logger.warning(e)
                 return
-            # compute quality metrics
-            msssim = np.empty(len(recon))
-            for z in range(len(recon)):
-                # compute the reconstructed image quality metrics
-                scales, msssim[z], quality_maps = xd.msssim(
-                    data['original'][z],
-                    recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] -
-                          pad],
-                    L=dynamic_range,
-                )
             os.makedirs(base_path, exist_ok=True)
             # save all information
             np.savez(
                 filename + '.npz',
                 recon=recon,
-                msssim=msssim,
                 time=wall_time,
                 total_time=total_time,
             )
@@ -334,20 +327,35 @@ def reconstruct(
                 vmin=0,
                 vmax=1.1 * dynamic_range,
             )
+        # compute quality metrics
+        msssim = np.empty(len(recon))
+        for z in range(len(recon)):
+            # compute the reconstructed image quality metrics
+            scales, msssim[z], quality_maps = xd.msssim(
+                data['original'][z],
+                recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] -
+                      pad],
+                L=dynamic_range,
+                sigma=11,
+            )
+        np.save(
+            filename + '.msssim',
+            msssim,
+        )
         if np.any(np.isnan(msssim)):
             logger.error("Quality rating contains NaN!")
         logger.info(
             "{} : ms-ssim = {:05.3f} : "
             "time = {:05.3f}s, total time = {:05.3f}s".format(
                 filename, np.nanmean(msssim), wall_time, total_time)
-            )
-        if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
-            logger.info(
-                "Early termination at {} iterations : "
-                "{:05.3f} < {:05.3f}".format(
-                    i, np.nanmean(msssim) - peak_quality, term_crit)
-                )
-            break
+        )
+        # if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
+        #     logger.info(
+        #         "Early termination at {} iterations : "
+        #         "{:05.3f} < {:05.3f}".format(
+        #             i, np.nanmean(msssim) - peak_quality, term_crit)
+        #         )
+        #     break
         peak_quality = max(np.nanmean(msssim), peak_quality)
 
 
