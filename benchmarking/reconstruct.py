@@ -71,7 +71,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         parameters = ast.literal_eval(parameters)
     else:
         parameters = [
-            {'algorithm': 'gridrec', 'filter_name': 'none'},
+            # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?
             {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
             {'algorithm': 'gridrec', 'filter_name': 'cosine'},
             {'algorithm': 'gridrec', 'filter_name': 'hamming'},
@@ -82,7 +82,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         ]
         if float(tomopy.__version__[:3]) < 1.5:
             parameters += [
-                {'algorithm': 'fbp'},
+                # {'algorithm': 'fbp'},  # broken
                 {'algorithm': 'art', 'num_iter': num_iter},
                 {'algorithm': 'bart', 'num_iter': num_iter},
                 {'algorithm': 'mlem', 'num_iter': num_iter},
@@ -159,10 +159,10 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter},
+                {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter}, # broken
                 {'algorithm': tomopy.lprec, 'lpmethod': 'tv', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},  # broken
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},  # broken
             ]
         except ImportError:
             tomopy.lprec = None
