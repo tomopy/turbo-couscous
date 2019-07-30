@@ -4,17 +4,16 @@ set -e
 python -Om benchmarking.project \
   --noise 2000 \
   --transmission \
-  --trials 32 \
+  --trials 8 \
   --width 1446 \
   --num-angles 1500 \
-  --phantom peppers \
+  --phantom coins \
 
 python -Om benchmarking.reconstruct \
   --ncore 16 \
-  --num-iter 5 \
-  --max-iter 80 \
-  --phantom peppers \
+  --max-iter 500 \
+  --phantom coins \
 
 python -Om benchmarking.summarize \
-  --phantom peppers \
-  --trials 32 \
+  --phantom coins \
+  --trials 8 \
