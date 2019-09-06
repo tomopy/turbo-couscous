@@ -357,7 +357,3 @@ def reconstruct(
         #         )
         #     break
         peak_quality = max(np.nanmean(msssim), peak_quality)
-
-
-if __name__ == '__main__':
-    main()

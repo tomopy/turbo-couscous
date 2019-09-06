@@ -321,7 +321,3 @@ def scrape_algorithm_times(json_filename):
             }
 
     return results
-
-
-if __name__ == '__main__':
-    summarize()

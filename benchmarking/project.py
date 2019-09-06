@@ -141,6 +141,3 @@ def multilevel_order(L):
         N += level / 2
         level *= 2
     return (np.concatenate(order) * L).astype('int')
-
-if __name__ == '__main__':
-    project()
