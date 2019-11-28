@@ -241,7 +241,8 @@ def reconstruct(
         iters, steps = [1], [1]
     else:
         iters = np.unique(np.logspace(0, np.log10(max_iter)).astype(int))
-        steps = iters[0] + np.diff(iters).tolist()
+        steps = [iters[0]] + np.diff(iters).tolist()
+        np.testing.assert_array_equal(np.cumsum(steps), iters)
 
     for i in range(len(iters)):
         # name the output file by combining the algorithm name with some
