@@ -80,36 +80,18 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
         ]
-        if float(tomopy.__version__[:3]) < 1.5:
-            parameters += [
-                # {'algorithm': 'fbp'},  # broken
-                {'algorithm': 'art', 'num_iter': num_iter},
-                {'algorithm': 'bart', 'num_iter': num_iter},
-                {'algorithm': 'mlem', 'num_iter': num_iter},
-                {'algorithm': 'osem', 'num_iter': num_iter},
-                {'algorithm': 'ospml_hybrid', 'num_iter': num_iter},
-                {'algorithm': 'ospml_quad', 'num_iter': num_iter},
-                {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
-                {'algorithm': 'pml_quad', 'num_iter': num_iter},
-                {'algorithm': 'sirt', 'num_iter': num_iter},
-            ]
-        if float(tomopy.__version__[:3]) >= 1.5:
-            parameters += [
-                {'algorithm': 'grad', 'num_iter': num_iter, 'reg_par': -1},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-                # {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
-                {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
-                # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-                # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
-                # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-                # {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
-                {'algorithm': 'tv', 'num_iter': num_iter},
-            ]
+        parameters += [
+            # {'algorithm': 'fbp'},  # broken
+            {'algorithm': 'art', 'num_iter': num_iter},
+            {'algorithm': 'bart', 'num_iter': num_iter},
+            {'algorithm': 'mlem', 'num_iter': num_iter},
+            {'algorithm': 'osem', 'num_iter': num_iter},
+            {'algorithm': 'ospml_hybrid', 'num_iter': num_iter},
+            {'algorithm': 'ospml_quad', 'num_iter': num_iter},
+            {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
+            {'algorithm': 'pml_quad', 'num_iter': num_iter},
+            {'algorithm': 'sirt', 'num_iter': num_iter},
+        ]
         try:
             import astra
             parameters += [
