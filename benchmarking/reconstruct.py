@@ -95,9 +95,9 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
             {'algorithm': 'pml_quad', 'num_iter': num_iter},
             {'algorithm': 'sirt', 'num_iter': num_iter},
-            {'algorithm': 'tikh', 'num_iter': num_iter}, #First Addition 
-            {'algorithm': 'tv', 'num_iter': num_iter}, #Second Additon
-            {'algorithm': 'grad', 'num_iter': num_iter} #Third Additon
+            {'algorithm': 'tikh', 'num_iter': num_iter},  
+            {'algorithm': 'tv', 'num_iter': num_iter}, 
+            {'algorithm': 'grad', 'num_iter': num_iter} 
             
 
         ]
