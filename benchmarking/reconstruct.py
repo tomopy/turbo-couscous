@@ -79,13 +79,13 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'gridrec', 'filter_name': 'parzen'},
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-            {'algorithm': 'fbp' , 'filter_name': 'butterworth'},
+            {'algorithm': 'fbp', 'filter_name': 'butterworth'},
             {'algorithm': 'fbp', 'filter_name': 'cosine'},
             {'algorithm': 'fbp', 'filter_name': 'hamming'},
             {'algorithm': 'fbp', 'filter_name': 'hann'},
             {'algorithm': 'fbp', 'filter_name': 'parzen'},
             {'algorithm': 'fbp', 'filter_name': 'ramlak'},
-            {'algorithm': 'fbp', 'filter_name': 'shepp'}, 
+            {'algorithm': 'fbp', 'filter_name': 'shepp'},
             {'algorithm': 'art', 'num_iter': num_iter},
             {'algorithm': 'bart', 'num_iter': num_iter},
             {'algorithm': 'mlem', 'num_iter': num_iter},
@@ -95,11 +95,9 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
             {'algorithm': 'pml_quad', 'num_iter': num_iter},
             {'algorithm': 'sirt', 'num_iter': num_iter},
-            {'algorithm': 'tikh', 'num_iter': num_iter},  
+            {'algorithm': 'tikh', 'num_iter': num_iter},
             {'algorithm': 'tv', 'num_iter': num_iter}, 
-            {'algorithm': 'grad', 'num_iter': num_iter} 
-            
-
+            {'algorithm': 'grad', 'num_iter': num_iter}
         ]
         try:
             import astra
