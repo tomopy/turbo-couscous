@@ -96,7 +96,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'pml_quad', 'num_iter': num_iter},
             {'algorithm': 'sirt', 'num_iter': num_iter},
             {'algorithm': 'tikh', 'num_iter': num_iter},
-            {'algorithm': 'tv', 'num_iter': num_iter}, 
+            {'algorithm': 'tv', 'num_iter': num_iter},
             {'algorithm': 'grad', 'num_iter': num_iter}
         ]
         try:
