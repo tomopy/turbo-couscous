@@ -97,7 +97,19 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'sirt', 'num_iter': num_iter},
             {'algorithm': 'tikh', 'num_iter': num_iter},
             {'algorithm': 'tv', 'num_iter': num_iter},
-            {'algorithm': 'grad', 'num_iter': num_iter}
+            {'algorithm': 'grad', 'num_iter': num_iter},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
         ]
         try:
             import astra
