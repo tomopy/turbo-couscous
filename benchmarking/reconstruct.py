@@ -80,7 +80,8 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
             {'algorithm': 'fbp', 'filter_name': 'butterworth'},
-            # {'algorithm': 'fbp', 'filter_name': 'cosine'},  # fbp is currenlty broken, it doesn't take filters into consideration
+            # {'algorithm': 'fbp', 'filter_name': 'cosine'},
+            # fbp is currenlty broken, it doesn't take filters into consideration
             # {'algorithm': 'fbp', 'filter_name': 'hamming'},
             # {'algorithm': 'fbp', 'filter_name': 'hann'},
             # {'algorithm': 'fbp', 'filter_name': 'parzen'},
@@ -99,7 +100,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'tv', 'num_iter': num_iter},
             {'algorithm': 'grad', 'num_iter': num_iter},
             {'algorithm': 'mlem', 'num_iter': num_iter,
-            'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
+                'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'},
 
             {'algorithm': 'mlem', 'num_iter': num_iter,
             'accelerated': True, 'device': 'gpu', 'interpolation': 'LINEAR'},
@@ -133,6 +134,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
 
             {'algorithm': 'sirt', 'num_iter': num_iter,
             'accelerated': True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+
         ]
         try:
             import astra
