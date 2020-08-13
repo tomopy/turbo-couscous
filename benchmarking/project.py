@@ -52,16 +52,16 @@ logger = logging.getLogger(__name__)
     '--guassian',
     nargs=3,
     default=(False, 0, 0),
-    help='Whether to add gaussian distortions, 
-        'as well as the mean and standard deviation as well.',
+    help='Whether to add gaussian distortions,'
+    'as well as the mean and standard deviation as well.',
 )
 @click.option(
     '-s_p',
     '--salt_pepper',
     nargs=3,
     default=(False, 0, None),
-    help='Whether to add salt_pepper noise, 
-        'as well as the probablity and value as well.',
+    help='Whether to add salt_pepper noise,'
+    'as well as the probablity and value as well.',
 )
 @click.option(
     '--emission/--transmission',
@@ -75,7 +75,7 @@ logger = logging.getLogger(__name__)
     help='Folder to put data inside.',
     type=click.Path(exists=False),
 )
-def project(num_angles, width, phantom, trials, poisson, 
+def project(num_angles, width, phantom, trials, poisson,
         guassian, salt_pepper, emission, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
@@ -112,15 +112,18 @@ def project(num_angles, width, phantom, trials, poisson,
         original = np.tile(original, reps=(trials, 1, 1))
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
     if guassian[0]:
-        sinogram = tomopy.sim.project.add_gaussian(sinogram, mean = float(guassian[1]), std = float(guassian[2]))
+        sinogram = tomopy.sim.project.add_gaussian(sinogram,
+            mean=float(guassian[1]), std=float(guassian[2]))
     if poisson[0]:
         if emission is True:
             sinogram = np.random.poisson(sinogram / poisson[1]) * poisson[1]
         else:
             norm = np.max(sinogram)
-            sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) * poisson[1]) / poisson[1]) * norm
+            sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) *
+                poisson[1]) / poisson[1]) * norm
     if salt_pepper[0]:
-        sinogram = tomopy.sim.project.add_salt_pepper(sinogram, prob = float(salt_pepper[1]), val = float(salt_pepper[2]))
+        sinogram = tomopy.sim.project.add_salt_pepper(sinogram,
+            prob=float(salt_pepper[1]), val=float(salt_pepper[2]))
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez_compressed(
