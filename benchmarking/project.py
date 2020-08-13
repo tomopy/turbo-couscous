@@ -76,7 +76,7 @@ logger = logging.getLogger(__name__)
     type=click.Path(exists=False),
 )
 def project(num_angles, width, phantom, trials, poisson,
-        guassian, salt_pepper, emission, output_dir):
+            guassian, salt_pepper, emission, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
@@ -113,17 +113,17 @@ def project(num_angles, width, phantom, trials, poisson,
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
     if guassian[0]:
         sinogram = tomopy.sim.project.add_gaussian(sinogram,
-            mean=float(guassian[1]), std=float(guassian[2]))
+                mean=float(guassian[1]), std=float(guassian[2]))
     if poisson[0]:
         if emission is True:
             sinogram = np.random.poisson(sinogram / poisson[1]) * poisson[1]
         else:
             norm = np.max(sinogram)
             sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) *
-                poisson[1]) / poisson[1]) * norm
+                    poisson[1]) / poisson[1]) * norm
     if salt_pepper[0]:
         sinogram = tomopy.sim.project.add_salt_pepper(sinogram,
-            prob=float(salt_pepper[1]), val=float(salt_pepper[2]))
+                prob=float(salt_pepper[1]), val=float(salt_pepper[2]))
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez_compressed(
