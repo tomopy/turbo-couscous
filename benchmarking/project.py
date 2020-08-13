@@ -41,47 +41,25 @@ logger = logging.getLogger(__name__)
     help='Number of phantom repetitions.',
     type=int,
 )
-@click.option(#edit
-    '-p_n',
-    '--poisson_noise',
-    default=0,
+@click.option(
+    '-p',
+    '--poisson',
+    default=(False, 0),
     help='Whether to add poisson noise, and how much.',
 )
-@click.option(#edit
-    '-guass?',
-    '--guassian_tf',
-    default=False,
-    help='Whether to add gaussian distortions',
+@click.option(
+    '-g',
+    '--guassian',
+    nargs=3, 
+    default=(False, 0, 0),
+    help='Whether to add gaussian distortions, and the mean and standard deviation as well.',
 )
-@click.option(#edit
-    '-guass_m',
-    '--guassian_mean',
-    default=0,
-    help='The mean of the gaussian distortions',
-)
-@click.option(#edit
-    '-guass_std',
-    '--guassian_std',
-    default=0,
-    help='The standard deviation of the guassian distortions.',
-)
-@click.option(#edit
-    '-s_p?',
-    '--salt_pepper_tf',
-    default=False,
-    help='Whether to add salt_pepper noise.',
-)
-@click.option(#edit
-    '-s_p_prob',
-    '--salt_pepper_prob',
-    default=0,
-    help='The probabilty of the salt_pepper noise.',
-)
-@click.option(#edit
-    '-s_p_val',
-    '--salt_pepper_val',
-    default=None,
-    help='The value of the salt_pepper noise.',
+@click.option(
+    '-s_p',
+    '--salt_pepper',
+    nargs=3,
+    default=(False, 0, None),
+    help='Whether to add salt_pepper noise, and the probablity and value as well.',
 )
 @click.option(
     '--emission/--transmission',
@@ -95,7 +73,8 @@ logger = logging.getLogger(__name__)
     help='Folder to put data inside.',
     type=click.Path(exists=False),
 )
-def project(num_angles, width, phantom, trials, poisson_noise, guassian_tf, guassian_mean, guassian_std, salt_pepper_tf, salt_pepper_prob, salt_pepper_val, emission, output_dir):
+def project(num_angles, width, phantom, trials, poisson, guassian,
+    salt_pepper, emission, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
@@ -130,17 +109,16 @@ def project(num_angles, width, phantom, trials, poisson_noise, guassian_tf, guas
     if trials > 1:
         original = np.tile(original, reps=(trials, 1, 1))
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
-    
-    if guassian_tf:
-        sinogram = tomopy.sim.project.add_gaussian(sinogram, mean = float(guassian_mean), std = float(guassian_std))
-    if poisson_noise>0:
+    if guassian[0]:
+        sinogram = tomopy.sim.project.add_gaussian(sinogram, mean = float(guassian[1]), std = float(guassian[2]))
+    if poisson[0]:
         if emission is True:
-            sinogram = np.random.poisson(sinogram / poisson_noise) * poisson_noise
+            sinogram = np.random.poisson(sinogram / poisson[1]) * poisson[1]
         else:
             norm = np.max(sinogram)
-            sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) * poisson_noise) / poisson_noise) * norm
-    if salt_pepper_tf:
-        sinogram = tomopy.sim.project.add_salt_pepper(sinogram, prob = float(salt_pepper_prob), val = float(salt_pepper_val))
+            sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) * poisson[1]) / poisson[1]) * norm
+    if salt_pepper[0]:
+        sinogram = tomopy.sim.project.add_salt_pepper(sinogram, prob = float(salt_pepper[1]), val = float(salt_pepper[2]))
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez_compressed(
