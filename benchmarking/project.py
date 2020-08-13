@@ -50,16 +50,18 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-g',
     '--guassian',
-    nargs=3, 
+    nargs=3,
     default=(False, 0, 0),
-    help='Whether to add gaussian distortions, and the mean and standard deviation as well.',
+    help='Whether to add gaussian distortions, 
+        'as well as the mean and standard deviation as well.',
 )
 @click.option(
     '-s_p',
     '--salt_pepper',
     nargs=3,
     default=(False, 0, None),
-    help='Whether to add salt_pepper noise, and the probablity and value as well.',
+    help='Whether to add salt_pepper noise, 
+        'as well as the probablity and value as well.',
 )
 @click.option(
     '--emission/--transmission',
@@ -73,8 +75,8 @@ logger = logging.getLogger(__name__)
     help='Folder to put data inside.',
     type=click.Path(exists=False),
 )
-def project(num_angles, width, phantom, trials, poisson, guassian,
-    salt_pepper, emission, output_dir):
+def project(num_angles, width, phantom, trials, poisson, 
+        guassian, salt_pepper, emission, output_dir):
     """Simulate data acquisition for tomography using TomoPy.
 
     Reorder the projections according to opitmal projection ordering and save
