@@ -44,24 +44,27 @@ logger = logging.getLogger(__name__)
 @click.option(
     '-p',
     '--poisson',
-    default=(False, 0),
+    default=0,
     help='Whether to add poisson noise, and how much.',
 )
 @click.option(
     '-g',
     '--guassian',
-    nargs=3,
-    default=(False, 0, 0),
-    help='Whether to add gaussian distortions,'
-    'as well as the mean and standard deviation as well.',
+    nargs=2,
+    default=(0, 0),
+    help='Whether to add gaussian distortions.'
+    'The first entry is the mean of the guassian distribution,'
+    'the second entry is the standard deviation.',
 )
 @click.option(
     '-s_p',
     '--salt_pepper',
-    nargs=3,
-    default=(False, 0, None),
-    help='Whether to add salt_pepper noise,'
-    'as well as the probablity and value as well.',
+    nargs=2,
+    default=(0, 0),
+    help='Whether to add salt_pepper noise distortions.'
+    'The first entry is the probablity that each element of'
+    'a pixel might be corrupted, the second is the value'
+    'to be assigned to the corrupted pixels.',
 )
 @click.option(
     '--emission/--transmission',
@@ -111,19 +114,21 @@ def project(num_angles, width, phantom, trials, poisson,
     if trials > 1:
         original = np.tile(original, reps=(trials, 1, 1))
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
-    if guassian[0]:
-        sinogram = tomopy.sim.project.add_gaussian(sinogram,
-                    mean=float(guassian[1]), std=float(guassian[2]))
-    if poisson[0]:
+    if guassian[0]>0 or guassian[1]>0:
+        sinogram = tomopy.sim.project.add_gaussian(
+            sinogram, mean=float(guassian[0]), std=float(guassian[1])
+        )
+    if poisson > 0:
         if emission is True:
-            sinogram = np.random.poisson(sinogram / poisson[1]) * poisson[1]
+            sinogram = np.random.poisson(sinogram / poisson) * poisson
         else:
             norm = np.max(sinogram)
             sinogram = -np.log(np.random.poisson(np.exp(-sinogram / norm) *
-                        poisson[1]) / poisson[1]) * norm
-    if salt_pepper[0]:
-        sinogram = tomopy.sim.project.add_salt_pepper(sinogram,
-                    prob=float(salt_pepper[1]), val=float(salt_pepper[2]))
+                        poisson) / poisson) * norm
+    if salt_pepper[0]>0 or salt_pepper[1]>0:
+        sinogram = tomopy.sim.project.add_salt_pepper(
+            sinogram, prob=float(salt_pepper[0]), val=float(salt_pepper[1])
+        )
     logger.info('Original shape: {}, Padded Shape: {}'.format(
         original.shape, sinogram.shape))
     np.savez_compressed(
