@@ -57,7 +57,7 @@ logger = logging.getLogger(__name__)
     'the second entry is the standard deviation.',
 )
 @click.option(
-    '-s_p',
+    '-s',
     '--salt_pepper',
     nargs=2,
     default=(0, 0),
@@ -114,7 +114,7 @@ def project(num_angles, width, phantom, trials, poisson,
     if trials > 1:
         original = np.tile(original, reps=(trials, 1, 1))
         sinogram = np.tile(sinogram, reps=(1, trials, 1))
-    if guassian[0]>0 or guassian[1]>0:
+    if guassian[0] > 0 or guassian[1] > 0:
         sinogram = tomopy.sim.project.add_gaussian(
             sinogram, mean=float(guassian[0]), std=float(guassian[1])
         )
