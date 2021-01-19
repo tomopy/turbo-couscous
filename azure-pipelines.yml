@@ -5,6 +5,11 @@
 
 schedules:
   - cron: "0 0 */14 * *"
+    displayName: "Bi-monthly build"
+    branches:
+      include:
+        - master
+        - benchmarking
 
 
 trigger:
