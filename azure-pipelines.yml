@@ -20,9 +20,6 @@ pool:
 
 steps:
 
-- checkout: self
-  persistCredentials: true
-
 # - script: echo Hello, world!
 #   displayName: 'Run a one-line script'
 
@@ -33,11 +30,9 @@ steps:
   
 - script: |
     git clone https://github.com/tomopy/tomopy-benchmarks
+    date
     cd tomopy-benchmarks
     date > test.txt
-    git config --global user.name "Dreycen Foiles"
-    git config --global user.email "foilesdreycen@gmail.com"
-    git add *
     git commit -m "test commit"
-    git push https://$(USERNAME):$(PASSWORD)@github.com/tomopy/tomopy-benchmarks
+    git push -u origin master
   displayName: 'Update benchmarking data repository'
