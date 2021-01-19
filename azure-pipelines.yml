@@ -34,6 +34,7 @@ steps:
     date > test.txt
     git config --global user.name "Dreycen Foiles"
     git config --global user.email "foilesdreycen@gmail.com"
+    git add *
     git commit -m "test commit"
     git push -u origin master
   displayName: 'Update benchmarking data repository'
