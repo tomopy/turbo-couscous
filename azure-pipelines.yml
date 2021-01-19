@@ -30,9 +30,10 @@ steps:
   
 - script: |
     git clone https://github.com/tomopy/tomopy-benchmarks
-    date
     cd tomopy-benchmarks
     date > test.txt
+    git config --global user.name "Dreycen Foiles"
+    git config --global user.email "foilesdreycen@gmail.com"
     git commit -m "test commit"
     git push -u origin master
   displayName: 'Update benchmarking data repository'
