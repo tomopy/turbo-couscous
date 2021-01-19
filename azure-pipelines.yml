@@ -11,18 +11,28 @@ schedules:
         - master
         - benchmarking
 
-
 trigger:
-- main
+- master
+- benchmarking
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run benchmarks'
+  
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    git clone https://github.com/tomopy/tomopy-benchmarks
+    date
+    cd tomopy-benchmarks
+    date > test.txt
+    git commit -m "test commit"
+    git push -u origin master
+  displayName: 'Update benchmarking data repository'
