@@ -39,5 +39,5 @@ steps:
     git config --global user.email "foilesdreycen@gmail.com"
     git add *
     git commit -m "test commit"
-    git push -f
+    git -c http.extraheader="AUTHORIZATION: bearer $(System.AccessToken)" push
   displayName: 'Update benchmarking data repository'
