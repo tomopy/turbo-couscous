@@ -39,6 +39,7 @@ steps:
     git config --global user.name "Dreycen Foiles"
     git config --global user.email "foilesdreycen@gmail.com"
     git add *
+    git remote add origin https://github.com/tomopy/tomopy-benchmarks
     git commit -m "test commit"
-    git push -u origin master
+    git push -f
   displayName: 'Update benchmarking data repository'
