@@ -20,6 +20,9 @@ pool:
 
 steps:
 
+- checkout: self
+  persistCredentials: true
+
 # - script: echo Hello, world!
 #   displayName: 'Run a one-line script'
 
