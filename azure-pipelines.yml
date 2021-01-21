@@ -39,5 +39,5 @@ steps:
     git config --global user.email "foilesdreycen@gmail.com"
     git add *
     git commit -m "test commit"
-    git -c http.extraheader="AUTHORIZATION: bearer $(System.AccessToken)" push
+    git push https://dreycenfoiles:Utilitarian1999@github.com/tomopy/tomopy-benchmarks
   displayName: 'Update benchmarking data repository'
