@@ -43,5 +43,5 @@ steps:
     git config --global user.email "foilesdreycen@gmail.com"
     git add *
     git commit -m "test commit"
-    git push https://dreycenfoiles:Utilitarian1999@github.com/tomopy/tomopy-benchmarks
+    git push https://$(username):$(password)@github.com/tomopy/tomopy-benchmarks
   displayName: 'Update benchmarking data repository'
