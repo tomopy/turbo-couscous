@@ -2,10 +2,10 @@
 set -e
 
 python -Om benchmarking.project \
-  --poisson 500 \
-  --trials 32 \
-  --width 1446 \
-  --num-angles 1500 \
+  --poisson 5 \
+  --trials 4 \
+  --width 800 \
+  --num-angles 32 \
   --phantom peppers \
 
 python -Om benchmarking.reconstruct \

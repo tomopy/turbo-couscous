@@ -20,24 +20,25 @@ pool:
 
 steps:
 
-- checkout: self
-  persistCredentials: true
-
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
-
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run benchmarks'
-  
 - script: |
-    git clone https://github.com/tomopy/tomopy-benchmarks
+    conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  displayName: 'Create benchmarking environment'
+
+- script: |
+    source activate tomopy-bench
+  displayName: Activate
+
+- script: git clone https://github.com/tomopy/tomopy-benchmarks
+  displayName: 'Clone tomopy benchmarks repo'
+
+- script: ./run-benchmarking.sh
+  displayName: 'Run benchmarks'
+
+- script: |
     cd tomopy-benchmarks
-    date > test.txt
     git config --global user.name "Dreycen Foiles"
     git config --global user.email "foilesdreycen@gmail.com"
     git add *
-    git commit -m "test commit"
-    git push https://$(USERNAME):$(PASSWORD)@github.com/tomopy/tomopy-benchmarks
+    git commit -m "Bi-monthly benchmark"
+    git push https://$(PAT)@github.com/tomopy/tomopy-benchmarks
   displayName: 'Update benchmarking data repository'
