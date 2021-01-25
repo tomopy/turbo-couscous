@@ -11,38 +11,39 @@ schedules:
         - master
         - benchmarking
 
+
+
 trigger:
 - master
 - benchmarking
 
 pool:
-  vmImage: 'ubuntu-latest'
+  # vmImage: 'ubuntu-latest'
+  name: Default
+  demands:
+    - CUDA_VERSION
+    - Agent.OS -equals Linux
 
 steps:
 
-- checkout: self
-  persistCredentials: true
+- script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  displayName: 'Create benchmarking environment'
 
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
+- script: git clone https://github.com/tomopy/tomopy-benchmarks
 
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run benchmarks'
-  
+- script: ./run-benchmarking.sh
+  displayName: 'Run benchmarks'
+
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
   displayName: 'Create benchmarking environment'
 
-- script: |
-    source activate tomopy-bench
-  displayName: Activate
-
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
   displayName: 'Clone tomopy benchmarks repo'
 
-- script: ./run-benchmarking.sh
+- script: |
+    source activate tomopy-bench
+    ./run-benchmarking.sh
   displayName: 'Run benchmarks'
 
 - script: |
@@ -53,3 +54,7 @@ steps:
     git commit -m "Bi-monthly benchmark"
     git push https://$(PAT)@github.com/tomopy/tomopy-benchmarks
   displayName: 'Update benchmarking data repository'
+
+- script: |
+    conda env remove --yes -n tomopy-benchmarks
+  displayName: Remove existing build environment
