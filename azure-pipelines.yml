@@ -24,7 +24,7 @@ pool:
 
 steps:
 
-- script: conda create env -n tomopy-bench -f tomopy-bench.yml 
+- script: conda create env -n tomopy-bench -f tomopy-bench.yaml 
   displayName: 'Create benchmarking environment'
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
