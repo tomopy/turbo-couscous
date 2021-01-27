@@ -29,7 +29,7 @@ steps:
 
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
-    source activate tomopy-bench
+    conda activate tomopy-bench
   displayName: 'Create benchmarking environment'
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
