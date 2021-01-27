@@ -29,13 +29,14 @@ steps:
 
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
-    conda activate tomopy-bench
   displayName: 'Create benchmarking environment'
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
   displayName: 'Clone tomopy benchmarks repo'
 
-- script: ./run-benchmarking.sh
+- script: |
+    source activate tomopy-bench
+    ./run-benchmarking.sh
   displayName: 'Run benchmarks'
 
 - script: |
