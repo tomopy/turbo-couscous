@@ -22,9 +22,11 @@ steps:
 
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
-    conda init bash
-    conda activate tomopy-bench
   displayName: 'Create benchmarking environment'
+
+- script: |
+    source activate tomopy-bench
+  displayName: Activate
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
   displayName: 'Clone tomopy benchmarks repo'
