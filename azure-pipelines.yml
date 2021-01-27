@@ -22,7 +22,7 @@ steps:
 
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
-    conda init 
+    conda init bash
     conda activate tomopy-bench
   displayName: 'Create benchmarking environment'
 
