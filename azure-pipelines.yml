@@ -24,12 +24,16 @@ pool:
 
 steps:
 
+- bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
 - script: |
     conda env create -n tomopy-bench -f tomopy-bench.yaml 
+    source activate tomopy-bench
   displayName: 'Create benchmarking environment'
 
 - script: |
-    source activate tomopy-bench
+    
   displayName: Activate
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
