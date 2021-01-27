@@ -47,3 +47,8 @@ steps:
     git commit -m "Bi-monthly benchmark"
     git push https://$(PAT)@github.com/tomopy/tomopy-benchmarks
   displayName: 'Update benchmarking data repository'
+
+  - script: >
+      conda env remove --yes
+      -n tomopy
+    displayName: Remove existing build environment
