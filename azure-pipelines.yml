@@ -15,11 +15,10 @@ trigger:
 - master
 - benchmarking
 
-# pool:
+pool:
 #   vmImage: 'ubuntu-latest'
-
-name: Default
-    demands:
+  name: Default
+  demands:
     - CUDA_VERSION
     - Agent.OS -equals Linux
 
