@@ -16,11 +16,11 @@ trigger:
 - benchmarking
 
 pool:
-  vmImage: 'ubuntu-latest'
-  # name: Default
-  # demands:
-  #   - CUDA_VERSION
-  #   - Agent.OS -equals Linux
+  # vmImage: 'ubuntu-latest'
+  name: Default
+  demands:
+    - CUDA_VERSION
+    - Agent.OS -equals Linux
 
 steps:
 
