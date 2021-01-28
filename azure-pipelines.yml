@@ -11,9 +11,7 @@ schedules:
         - master
         - benchmarking
 
-- script: |
-    conda env remove --yes -n tomopy-benchmarks
-  displayName: Remove existing build environment
+
 
 trigger:
 - master
@@ -27,6 +25,10 @@ pool:
     - Agent.OS -equals Linux
 
 steps:
+
+- script: |
+    conda env remove --yes -n tomopy-benchmarks
+  displayName: Remove existing build environment
 
 - bash: echo "##vso[task.prependpath]$CONDA/bin"
   displayName: Add conda to PATH
