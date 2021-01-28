@@ -49,5 +49,5 @@ steps:
   displayName: 'Update benchmarking data repository'
 
 - script: |
-    conda env remove --yes -n tomopy
+    conda env remove --yes -n tomopy-benchmarks
   displayName: Remove existing build environment
