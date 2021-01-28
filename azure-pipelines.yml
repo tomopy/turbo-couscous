@@ -11,6 +11,10 @@ schedules:
         - master
         - benchmarking
 
+- script: |
+    conda env remove --yes -n tomopy-benchmarks
+  displayName: Remove existing build environment
+
 trigger:
 - master
 - benchmarking
