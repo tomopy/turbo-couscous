@@ -27,7 +27,7 @@ pool:
 steps:
 
 - script: |
-    conda env remove --yes -n tomopy-benchmarks
+    conda env remove --yes -n tomopy-bench
   displayName: Remove existing build environment
 
 - bash: echo "##vso[task.prependpath]$CONDA/bin"
