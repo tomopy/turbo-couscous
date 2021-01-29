@@ -23,7 +23,9 @@ jobs:
 
   pool:
     name: Default
-
+    demands: 
+      - Agents.NVIDIA_VISIBLE_DEVICES -equals 0
+      - Agent.OS -equals Linux
   steps:
 
   - script: |
