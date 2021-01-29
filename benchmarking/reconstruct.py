@@ -8,10 +8,12 @@ import ast
 import logging
 import os.path
 import time
+from datetime import date
+
 import click
-import tomopy
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import tomopy
 import xdesign as xd
 
 logger = logging.getLogger(__name__)
