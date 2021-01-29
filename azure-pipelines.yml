@@ -26,8 +26,13 @@ pool:
 
 steps:
 
-- script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
-  displayName: 'Create benchmarking environment'
+
+- script: |
+    conda env remove --yes -n tomopy-bench
+  displayName: Remove existing build environment
+
+- bash: echo "##vso[task.prependpath]$CONDA/bin"
+  displayName: Add conda to PATH
 
 - script: git clone https://github.com/tomopy/tomopy-benchmarks
 
