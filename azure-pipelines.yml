@@ -19,7 +19,7 @@ trigger:
 
 jobs:
 
-- job: CPU Benchmarks
+- job: CPU_Benchmarks
 
   pool:
     name: Default
@@ -58,7 +58,7 @@ jobs:
       conda env remove --yes -n tomopy-benchmarks
     displayName: Remove existing build environment
 
-- job: GPU Benchmarks
+- job: GPU_Benchmarks
 
   pool:
     name: Default
@@ -67,7 +67,7 @@ jobs:
       - Agent.OS -equals Linux
 
   steps: 
-    
+
   - script: |
         conda env remove --yes -n tomopy-bench
     displayName: Remove existing build environment
