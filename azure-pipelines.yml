@@ -44,7 +44,7 @@ jobs:
 
   - script: |
       source activate tomopy-bench
-      ./run-benchmarking-cpu.sh
+      bash run-benchmarking-cpu.sh
     displayName: 'Run benchmarks'
 
   - script: |
@@ -86,7 +86,7 @@ jobs:
 
   - script: |
       source activate tomopy-bench
-      ./run-benchmarking-gpu.sh
+      bash run-benchmarking-gpu.sh
     displayName: 'Run benchmarks'
 
   - script: |
