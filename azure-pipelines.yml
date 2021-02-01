@@ -24,7 +24,7 @@ jobs:
   pool:
     name: Default
     demands: 
-      - NVIDIA_VISIBLE_DEVICES -equals 0
+      - GPUs -equals 0
       - Agent.OS -equals Linux
   steps:
 
