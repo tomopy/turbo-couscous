@@ -53,6 +53,7 @@ jobs:
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
+      git pull https://github.com/tomopy/tomopy.github.io
       git push https://$(PAT)@github.com/tomopy/tomopy.github.io
     displayName: 'Update benchmarking data repository'
 
@@ -95,6 +96,7 @@ jobs:
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
+      git pull https://github.com/tomopy/tomopy.github.io
       git push https://$(PAT)@github.com/tomopy/tomopy.github.io
     displayName: 'Update benchmarking data repository'
 
