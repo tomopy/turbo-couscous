@@ -13,18 +13,7 @@ python -Om benchmarking.reconstruct \
   --num-iter 5 \
   --max-iter 50 \
   --phantom peppers \
-  --parameters """[{'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated': 
-                True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'CUBIC'}]"""
+  --parameters "[{'algorithm': 'mlem', 'num_iter': 5, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'}, {'algorithm': 'mlem', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'LINEAR'},{'algorithm': 'mlem', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'CUBIC'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'NN'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'LINEAR'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'CUBIC'}]"
 
 python -Om benchmarking.summarize \
   --phantom peppers \
