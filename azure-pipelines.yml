@@ -58,6 +58,7 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-benchmarks
+      rm -r tomopy.github.io
     displayName: Remove existing build environment
 
 - job: GPU_Benchmarks
@@ -100,4 +101,5 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-benchmarks
+      rm -r tomopy.github.io
     displayName: Remove existing build environment
