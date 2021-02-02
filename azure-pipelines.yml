@@ -53,7 +53,7 @@ jobs:
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
-      git push https://$(PAT)@github.com/tomopy/tomopy-benchmarks
+      git push https://$(PAT)@github.com/tomopy/tomopy.github.io
     displayName: 'Update benchmarking data repository'
 
   - script: |
@@ -81,7 +81,7 @@ jobs:
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
-  - script: git clone https://github.com/tomopy/tomopy-benchmarks
+  - script: git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
@@ -95,7 +95,7 @@ jobs:
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
-      git push https://$(PAT)@github.com/tomopy/tomopy-benchmarks
+      git push https://$(PAT)@github.com/tomopy/tomopy.github.io
     displayName: 'Update benchmarking data repository'
 
   - script: |
