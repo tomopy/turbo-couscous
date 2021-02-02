@@ -48,7 +48,7 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      cd tomopy-benchmarks
+      cd tomopy.github.io
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
@@ -90,7 +90,7 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      cd tomopy-benchmarks
+      cd tomopy.github.io
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
