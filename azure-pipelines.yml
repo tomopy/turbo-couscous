@@ -30,6 +30,7 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-bench
+      rm -r tomopy.github.io
     displayName: Remove existing build environment
 
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
@@ -75,6 +76,7 @@ jobs:
 
   - script: |
         conda env remove --yes -n tomopy-bench
+        rm -r tomopy.github.io
     displayName: Remove existing build environment
 
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
