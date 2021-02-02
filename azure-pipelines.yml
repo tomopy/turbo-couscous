@@ -60,7 +60,6 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-benchmarks
-      cd ..
       rm -r tomopy.github.io
     displayName: Remove existing build environment
 
@@ -106,6 +105,5 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-benchmarks
-      cd ..
       rm -r tomopy.github.io
     displayName: Remove existing build environment
