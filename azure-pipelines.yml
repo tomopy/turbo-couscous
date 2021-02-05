@@ -96,8 +96,8 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      find . type f -iname "*.npz" -delete
-      find . type f -iname "*.npy" -delete
+      find . "*.npz" -delete
+      find . "*.npy" -delete
     displayName: 'Remove data files'
 
   - script: |
