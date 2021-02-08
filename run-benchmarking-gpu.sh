@@ -23,6 +23,3 @@ python -Om benchmarking.summarize \
   --phantom peppers \
   --trials 32 \
   --output-dir $outputDir\
-
-find -L tomopy.github.io/ "*.npz" -delete
-find -L tomopy.github.io/ "*.npy" -delete
