@@ -40,7 +40,7 @@ jobs:
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
-  - script: git clone -f https://github.com/tomopy/tomopy.github.io
+  - script: git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
@@ -74,7 +74,7 @@ jobs:
 
   - script: |
         conda env remove --yes -n tomopy-bench
-        rm -r -f tomopy.github.io
+        rm -rf tomopy.github.io
     displayName: Remove existing build environment
 
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
@@ -85,7 +85,7 @@ jobs:
     displayName: 'Create benchmarking environment'
 
   - script: |
-      git clone -f https://github.com/tomopy/tomopy.github.io
+      git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
@@ -104,5 +104,5 @@ jobs:
 
   - script: |
       conda env remove --yes -n tomopy-benchmarks
-      rm -r tomopy.github.io
+      rm -rf tomopy.github.io
     displayName: Remove existing build environment
