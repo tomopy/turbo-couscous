@@ -261,7 +261,7 @@ def reconstruct(
     total_time = 0
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
-    for i in range(step, end + step, step):
+    for i in np.unique(np.logspace(np.log10(step), np.log10(end), dtype=int, num=end/step)):
         # name the output file by combining the algorithm name with some
         # important (key) input parameters
         filename = algorithm
