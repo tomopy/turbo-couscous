@@ -129,7 +129,8 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         try:
             import astra
             parameters += [
-                {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
+                {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda',
+                                                        'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
                 # FIXME: Not confident that these filter parameters are being passed to astra
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'shepp-logan'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'cosine'}},
@@ -175,7 +176,8 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter}, # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'grad',
+                    'num_iter': num_iter},  # broken
                 {'algorithm': tomopy.lprec, 'lpmethod': 'tv', 'num_iter': num_iter},
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},  # broken
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},  # broken
