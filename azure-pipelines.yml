@@ -39,7 +39,7 @@ jobs:
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
-  - script: git clone https://github.com/tomopy/tomopy.github.io
+  - script: git pull -f https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
@@ -82,7 +82,8 @@ jobs:
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
-  - script: git clone https://github.com/tomopy/tomopy.github.io
+  - script: |
+      git pull -f https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |

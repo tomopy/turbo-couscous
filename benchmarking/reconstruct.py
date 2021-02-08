@@ -130,7 +130,8 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             import astra
             parameters += [
                 {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda',
-                                                        'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
+                                                        'method': 'FBP_CUDA', 
+                                                        'FilterType': 'ram-lak'}},
                 # FIXME: Not confident that these filter parameters are being passed to astra
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'shepp-logan'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'cosine'}},
@@ -263,7 +264,10 @@ def reconstruct(
     total_time = 0
     end = 1 if 'num_iter' not in params else max_iter
     step = 1 if 'num_iter' not in params else params['num_iter']
-    for i in np.unique(np.logspace(np.log10(step), np.log10(end), dtype=int, num=end/step)):
+    for i in np.unique(np.logspace(np.log10(step), 
+                                   np.log10(end), 
+                                   dtype=int, 
+                                   num=end/step)):
         # name the output file by combining the algorithm name with some
         # important (key) input parameters
         filename = algorithm
