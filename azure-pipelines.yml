@@ -48,8 +48,8 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      find . type f -iname "*.npz" -delete
-      find . type f -iname "*.npy" -delete
+      find tomopy.github.io "*.npz" -delete
+      find tomopy.github.io "*.npy" -delete
     displayName: 'Remove data files'
 
   - script: |
@@ -96,8 +96,8 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      find . "*.npz" -delete
-      find . "*.npy" -delete
+      find tomopy.github.io "*.npz" -delete
+      find tomopy.github.io "*.npy" -delete
     displayName: 'Remove data files'
 
   - script: |
