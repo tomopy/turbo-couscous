@@ -24,5 +24,5 @@ python -Om benchmarking.summarize \
   --trials 32 \
   --output-dir $outputDir\
 
-find tomopy.github.io "*.npz" -delete
-find tomopy.github.io "*.npy" -delete
+find -L tomopy.github.io/ "*.npz" -delete
+find -L tomopy.github.io/ "*.npy" -delete
