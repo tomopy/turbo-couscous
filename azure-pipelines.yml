@@ -48,11 +48,6 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      find tomopy.github.io "*.npz" -delete
-      find tomopy.github.io "*.npy" -delete
-    displayName: 'Remove data files'
-
-  - script: |
       cd tomopy.github.io
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
@@ -94,12 +89,6 @@ jobs:
       source activate tomopy-bench
       bash run-benchmarking-gpu.sh
     displayName: 'Run benchmarks'
-
-  - script: |
-      ls
-      find tomopy.github.io "*.npz" -delete
-      find tomopy.github.io "*.npy" -delete
-    displayName: 'Remove data files'
 
   - script: |
       cd tomopy.github.io
