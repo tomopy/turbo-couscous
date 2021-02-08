@@ -14,7 +14,6 @@ schedules:
 
 trigger:
 - master
-- benchmarking
 
 jobs:
 
@@ -27,13 +26,13 @@ jobs:
       - Agent.OS -equals Linux
   steps:
 
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
   - script: |
       conda env remove --yes -n tomopy-bench
       rm -rf tomopy.github.io
-    displayName: Remove existing build environment
-
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
+    displayName: Remove existing build environment  
 
   - script: |
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
@@ -71,13 +70,13 @@ jobs:
 
   steps: 
 
+  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+    displayName: Add conda to PATH
+
   - script: |
         conda env remove --yes -n tomopy-bench
         rm -rf tomopy.github.io
     displayName: Remove existing build environment
-
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
 
   - script: |
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
