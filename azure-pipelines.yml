@@ -96,6 +96,7 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
+      ls
       find tomopy.github.io "*.npz" -delete
       find tomopy.github.io "*.npy" -delete
     displayName: 'Remove data files'
