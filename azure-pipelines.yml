@@ -9,7 +9,6 @@ schedules:
     branches:
       include:
         - master
-        - benchmarking
 
 
 
