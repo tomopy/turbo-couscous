@@ -10,8 +10,6 @@ schedules:
       include:
         - master
 
-
-
 trigger:
 - master
 
@@ -22,7 +20,7 @@ jobs:
   pool:
     name: Default
     demands: 
-      - GPUs -equals 0
+      - NO_GPU
       - Agent.OS -equals Linux
   steps:
 
@@ -37,6 +35,9 @@ jobs:
   - script: |
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
+
+  - script: conda list -n tomopy-bench
+    displayName: 'List conda environment'
 
   - script: git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
@@ -56,7 +57,7 @@ jobs:
     displayName: 'Update benchmarking data repository'
 
   - script: |
-      conda env remove --yes -n tomopy-benchmarks
+      conda env remove --yes -n tomopy-bench
       rm -rf tomopy.github.io
     displayName: Remove existing build environment
 
@@ -82,6 +83,9 @@ jobs:
       conda env create -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
+  - script: conda list -n tomopy-bench
+    displayName: 'List conda environment'
+
   - script: |
       git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
@@ -101,6 +105,6 @@ jobs:
     displayName: 'Update benchmarking data repository'
 
   - script: |
-      conda env remove --yes -n tomopy-benchmarks
+      conda env remove --yes -n tomopy-bench
       rm -rf tomopy.github.io
     displayName: Remove existing build environment
