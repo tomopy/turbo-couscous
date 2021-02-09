@@ -10,7 +10,6 @@ import logging
 import os
 import re
 from collections import defaultdict
-from datetime import date
 
 import click
 import matplotlib.pyplot as plt

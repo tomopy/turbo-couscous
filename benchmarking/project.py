@@ -5,7 +5,6 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
-from datetime import date
 
 import click
 import matplotlib.pyplot as plt
