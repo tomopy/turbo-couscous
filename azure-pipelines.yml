@@ -33,7 +33,7 @@ jobs:
     displayName: Remove existing build environment  
 
   - script: |
-      conda env create -n tomopy-bench -f tomopy-bench.yaml 
+      conda env create -n tomopy-bench -f envs/tomopy-bench-cpu.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
@@ -80,7 +80,7 @@ jobs:
     displayName: Remove existing build environment
 
   - script: |
-      conda env create -n tomopy-bench -f tomopy-bench.yaml 
+      conda env create -n tomopy-bench -f envs/tomopy-bench-gpu.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
