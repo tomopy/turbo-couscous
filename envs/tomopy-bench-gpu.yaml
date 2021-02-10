@@ -7,5 +7,5 @@ dependencies:
   - matplotlib=3
   - numpy=1.15
   - python=3.6
-  - tomopy
+  - tomopy=*=cuda10.2*
   - xdesign=0.5.1
