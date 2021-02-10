@@ -8,11 +8,10 @@ import ast
 import logging
 import os.path
 import time
-
 import click
-import matplotlib.pyplot as plt
-import numpy as np
 import tomopy
+import numpy as np
+import matplotlib.pyplot as plt
 import xdesign as xd
 
 logger = logging.getLogger(__name__)
@@ -128,10 +127,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
         try:
             import astra
             parameters += [
-                {'algorithm': tomopy.astra,
-                 'options': {'proj_type': 'cuda',
-                             'method': 'FBP_CUDA',
-                             'FilterType': 'ram-lak'}},
+                {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
                 # FIXME: Not confident that these filter parameters are being passed to astra
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'shepp-logan'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'cosine'}},
@@ -177,8 +173,7 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'grad',
-                    'num_iter': num_iter},  # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter}, # broken
                 {'algorithm': tomopy.lprec, 'lpmethod': 'tv', 'num_iter': num_iter},
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},  # broken
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},  # broken
@@ -223,7 +218,7 @@ def reconstruct(
 
     Resume from previous reconstruction if exact files already exist.
     Save files to file named by as:
-    output_dir/algorithm/algorithm.filter_name.device.INTERPOLATION.[npz png]
+    output_dir/algorithm/algorithm.filter_name.device.INTERPOLATION.[npz jpg]
 
     Parameters
     ----------
@@ -237,7 +232,7 @@ def reconstruct(
         tomopy.recon().
     dynamic_range : float
         The expected dynamic range of the reconstructed image. This param
-        is used to scale a png image of the reconstruction
+        is used to scale a jpg image of the reconstruction
     max_iter : int
         The maximum number iterations if the algorithm is iterative
     phantom : string
@@ -339,9 +334,9 @@ def reconstruct(
                 total_time=total_time,
             )
             plt.imsave(
-                filename + '.png',
+                filename + '.jpg',
                 recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
-                format='png',
+                format='jpg',
                 cmap=plt.cm.cividis,
                 vmin=0,
                 vmax=1.1 * dynamic_range,

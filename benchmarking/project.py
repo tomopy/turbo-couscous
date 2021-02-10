@@ -3,13 +3,12 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import logging
 import os
-
+import logging
 import click
-import matplotlib.pyplot as plt
-import numpy as np
 import tomopy
+import numpy as np
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
