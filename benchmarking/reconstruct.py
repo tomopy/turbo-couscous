@@ -207,6 +207,7 @@ def reconstruct(
         max_iter,
         phantom,
         output_dir,
+        term_crit=-0.05,
 ):
     """Reconstruct data using given params.
 
@@ -350,11 +351,36 @@ def reconstruct(
                 vmin=0,
                 vmax=1.1 * dynamic_range,
             )
-        logger.info(
-            "{} : "
-            "time = {:05.3f}s, total time = {:05.3f}s".format(
-                filename, wall_time, total_time)
+        # compute quality metrics
+        msssim = np.empty(len(recon))
+        for z in range(len(recon)):
+            # compute the reconstructed image quality metrics
+            scales, msssim[z], quality_maps = xd.msssim(
+                data['original'][z],
+                recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] -
+                      pad],
+                L=dynamic_range,
+                sigma=11,
+            )
+        np.save(
+            filename + '.msssim',
+            msssim,
         )
+        if np.any(np.isnan(msssim)):
+            logger.error("Quality rating contains NaN!") 
+        logger.info(
+            "{} : ms-ssim = {:05.3f} : "
+            "time = {:05.3f}s, total time = {:05.3f}s".format(
+                filename, np.nanmean(msssim), wall_time, total_time)
+        )
+        # if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
+        #     logger.info(
+        #         "Early termination at {} iterations : "
+        #         "{:05.3f} < {:05.3f}".format(
+        #             i, np.nanmean(msssim) - peak_quality, term_crit)
+        #         )
+        #     break
+        peak_quality = max(np.nanmean(msssim), peak_quality)
 
 
 if __name__ == '__main__':
