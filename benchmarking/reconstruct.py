@@ -120,7 +120,9 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
         try:
             import astra
             parameters += [
-                {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
+                {'algorithm': tomopy.astra,
+                 'options': {'proj_type': 'cuda',
+                             'method': 'FBP_CUDA', 'FilterType': 'ram-lak'}},
                 # FIXME: Not confident that these filter parameters are being passed to astra
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'shepp-logan'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'cosine'}},
