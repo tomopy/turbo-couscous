@@ -2,8 +2,8 @@
 set -e
 
 python -Om benchmarking.project \
-  --noise 500 \
-  --trials 8 \
+  --poisson 500 \
+  --trials 32 \
   --width 1446 \
   --num-angles 1500 \
   --phantom coins \

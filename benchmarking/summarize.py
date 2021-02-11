@@ -177,7 +177,8 @@ def image_quality_vs_time_plot(
                 **linestyles[algo.lower()],
             )
             for i, filter_name in enumerate(results[algo]["num_iter"]):
-                dataxy = np.array([time_steps[i] / trials, results[algo]["quality"][i]])
+                dataxy = np.array(
+                    [time_steps[i] / trials, results[algo]["quality"][i]])
                 plt.annotate(
                     filter_name,
                     xy=dataxy,
@@ -201,11 +202,14 @@ def image_quality_vs_time_plot(
     plt.xlim([0.1, 3600])
     plt.semilogx(basex=2)
     plt.xticks(
-        [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600,],# 3*3600, 6*3600, 12*3600, 24*3600],
-        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h', '3h',],# '6h', '12h', '24h'],
+        # 3*3600, 6*3600, 12*3600, 24*3600],
+        [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600],
+        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m',
+            '30m', '1h']  # , '3h',  # '6h', '12h', '24h'],
     )
 
-    plt.legend(results.keys(), ncol=1, handlelength=3, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend(results.keys(), ncol=1, handlelength=3,
+               bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
     if title is None:
@@ -224,7 +228,8 @@ def concat_recons(algo_folder, base_path):
 
     # split into chunks of five images
     for i in range(0, np.ceil(len(recons) / 5).astype(int)):
-        combined = np.concatenate(recons[5*i:min(len(recons), 5*(i+1))], axis=1)
+        combined = np.concatenate(
+            recons[5*i:min(len(recons), 5*(i+1))], axis=1)
         plt.imsave(algo_folder + '-{}.jpg'.format(i), combined)
 
 
