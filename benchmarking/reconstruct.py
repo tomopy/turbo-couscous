@@ -80,41 +80,41 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
             # {'algorithm': 'fbp', 'filter_name': 'parzen'},
             # {'algorithm': 'fbp', 'filter_name': 'ramlak'},
             # {'algorithm': 'fbp', 'filter_name': 'shepp'},
-            # {'algorithm': 'art', 'num_iter': num_iter},
-            # {'algorithm': 'bart', 'num_iter': num_iter},
-            {'algorithm': 'mlem', 'num_iter': num_iter},
-            {'algorithm': 'osem', 'num_iter': num_iter},
-            {'algorithm': 'ospml_hybrid', 'num_iter': num_iter},
-            {'algorithm': 'ospml_quad', 'num_iter': num_iter},
-            {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
-            {'algorithm': 'pml_quad', 'num_iter': num_iter},
-            {'algorithm': 'sirt', 'num_iter': num_iter},
-            {'algorithm': 'tikh', 'num_iter': num_iter},
-            {'algorithm': 'tv', 'num_iter': num_iter},
-            {'algorithm': 'grad', 'num_iter': num_iter},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            # {'algorithm': 'art'},
+            # {'algorithm': 'bart'},
+            {'algorithm': 'mlem'},
+            {'algorithm': 'osem'},
+            {'algorithm': 'ospml_hybrid'},
+            {'algorithm': 'ospml_quad'},
+            {'algorithm': 'pml_hybrid'},
+            {'algorithm': 'pml_quad'},
+            {'algorithm': 'sirt'},
+            {'algorithm': 'tikh'},
+            {'algorithm': 'tv'},
+            {'algorithm': 'grad'},
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
         ]
         try:
@@ -251,6 +251,7 @@ def reconstruct(
 
     # initial reconstruction guess; use defaults unique to each algorithm
     recon = None
+    peak_quality = 0
     total_time = 0
 
     # Create evenly spaced samples across a log plot
@@ -367,7 +368,7 @@ def reconstruct(
             msssim,
         )
         if np.any(np.isnan(msssim)):
-            logger.error("Quality rating contains NaN!") 
+            logger.error("Quality rating contains NaN!")
         logger.info(
             "{} : ms-ssim = {:05.3f} : "
             "time = {:05.3f}s, total time = {:05.3f}s".format(
