@@ -1,4 +1,4 @@
-name: tomopy-cpu
+name: tomopy-gpu
 channels:
   - conda-forge
   - defaults
