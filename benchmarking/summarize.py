@@ -4,12 +4,12 @@ reconstruction time."""
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-from collections import defaultdict
 import glob
 import json
 import logging
 import os
 import re
+from collections import defaultdict
 
 import click
 import matplotlib.pyplot as plt
@@ -222,7 +222,7 @@ def image_quality_vs_time_plot(
 
 def concat_recons(algo_folder, base_path):
     recons = list()
-    for file in glob.glob(os.path.join(algo_folder, "*.jpg")):
+    for file in glob.glob(os.path.join(algo_folder, "*.png")):
         print(file)
         recons.append(plt.imread(file))
 
@@ -230,7 +230,7 @@ def concat_recons(algo_folder, base_path):
     for i in range(0, np.ceil(len(recons) / 5).astype(int)):
         combined = np.concatenate(
             recons[5*i:min(len(recons), 5*(i+1))], axis=1)
-        plt.imsave(algo_folder + '-{}.jpg'.format(i), combined)
+        plt.imsave(algo_folder + '-{}.png'.format(i), combined)
 
 
 def scrape_image_quality(algo_folder):

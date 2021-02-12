@@ -8,10 +8,11 @@ import ast
 import logging
 import os.path
 import time
+
 import click
-import tomopy
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import tomopy
 import xdesign as xd
 
 logger = logging.getLogger(__name__)
@@ -166,12 +167,13 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'cosine2'},
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hamming'},
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'cg'},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'em'},
-                # {'algorithm': tomopy.lprec, 'lpmethod': 'grad'},  # broken
-                {'algorithm': tomopy.lprec, 'lpmethod': 'tv'},
-                # {'algorithm': tomopy.lprec, 'lpmethod': 'tve'},  # broken
-                # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1'},  # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
+                {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
+                {'algorithm': tomopy.lprec, 'lpmethod': 'grad',
+                    'num_iter': num_iter},  # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'tv', 'num_iter': num_iter},
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},  # broken
+                # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},  # broken
             ]
         except ImportError:
             tomopy.lprec = None
@@ -213,7 +215,7 @@ def reconstruct(
 
     Resume from previous reconstruction if exact files already exist.
     Save files to file named by as:
-    output_dir/algorithm/algorithm.filter_name.device.INTERPOLATION.[npz jpg]
+    output_dir/algorithm/algorithm.filter_name.device.INTERPOLATION.[npz png]
 
     Parameters
     ----------
@@ -227,7 +229,7 @@ def reconstruct(
         tomopy.recon().
     dynamic_range : float
         The expected dynamic range of the reconstructed image. This param
-        is used to scale a jpg image of the reconstruction
+        is used to scale a png image of the reconstruction
     max_iter : int
         The maximum number iterations if the algorithm is iterative
     phantom : string
@@ -345,9 +347,9 @@ def reconstruct(
                 total_time=total_time,
             )
             plt.imsave(
-                filename + '.jpg',
+                filename + '.png',
                 recon[0, pad:recon.shape[1] - pad, pad:recon.shape[2] - pad],
-                format='jpg',
+                format='png',
                 cmap=plt.cm.cividis,
                 vmin=0,
                 vmax=1.1 * dynamic_range,
