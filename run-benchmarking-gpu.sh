@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 currentDate=`date +%F`
-outputDir=tomopy.github.io/$currentDate
+outputDir=tomopy.github.io/$currentDate/gpu
 
 python -Om benchmarking.project \
   --poisson 5 \
