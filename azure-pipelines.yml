@@ -49,6 +49,7 @@ jobs:
 
   - script: |
       cd tomopy.github.io
+      git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
@@ -97,6 +98,7 @@ jobs:
 
   - script: |
       cd tomopy.github.io
+      git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
