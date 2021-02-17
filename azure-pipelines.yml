@@ -44,6 +44,17 @@ jobs:
 
   - script: |
       source activate tomopy-bench
+      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
+      exists=`git show-ref refs/heads/$TOMOPY_VERSION`
+      if [ -n "$exists" ]; then
+          git checkout $TOMOPY_VERSION
+      else
+          git checkout -b $TOMOPY_VERSION
+      fi
+    displayName: Checkout appropriate version branch
+
+  - script: |
+      source activate tomopy-bench
       bash run-benchmarking-cpu.sh
     displayName: 'Run benchmarks'
 
@@ -90,6 +101,17 @@ jobs:
   - script: |
       git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
+
+  - script: |
+      source activate tomopy-bench
+      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
+      exists=`git show-ref refs/heads/$TOMOPY_VERSION`
+      if [ -n "$exists" ]; then
+          git checkout $TOMOPY_VERSION
+      else
+          git checkout -b $TOMOPY_VERSION
+      fi
+    displayName: Checkout appropriate version branch
 
   - script: |
       source activate tomopy-bench
