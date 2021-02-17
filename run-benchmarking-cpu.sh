@@ -13,11 +13,9 @@ python -Om benchmarking.project \
 
 python -Om benchmarking.reconstruct \
   --ncore 16 \
-  --num-iter 5 \
   --max-iter 50 \
   --phantom peppers \
   --output-dir $outputDir \
-  
 
 python -Om benchmarking.summarize \
   --phantom peppers \

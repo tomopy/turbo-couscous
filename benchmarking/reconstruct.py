@@ -26,13 +26,6 @@ logger = logging.getLogger(__name__)
     help='Name of a phantom.',
 )
 @click.option(
-    '-i',
-    '--num-iter',
-    default=5,
-    help='Number of iterations between saves.',
-    type=int,
-)
-@click.option(
     '-m',
     '--max-iter',
     default=500,
@@ -57,7 +50,7 @@ logger = logging.getLogger(__name__)
     default=None,
     help='Python List of Python Dict of tomopy parameters as string',
 )
-def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
+def main(phantom, max_iter, output_dir, ncore, parameters):
     """Reconstruct data using TomoPy.
 
     Automatically chooses which algorithms to run based the TomoPy
@@ -88,41 +81,41 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
             # {'algorithm': 'fbp', 'filter_name': 'parzen'},
             # {'algorithm': 'fbp', 'filter_name': 'ramlak'},
             # {'algorithm': 'fbp', 'filter_name': 'shepp'},
-            # {'algorithm': 'art', 'num_iter': num_iter},
-            # {'algorithm': 'bart', 'num_iter': num_iter},
-            {'algorithm': 'mlem', 'num_iter': num_iter},
-            {'algorithm': 'osem', 'num_iter': num_iter},
-            {'algorithm': 'ospml_hybrid', 'num_iter': num_iter},
-            {'algorithm': 'ospml_quad', 'num_iter': num_iter},
-            {'algorithm': 'pml_hybrid', 'num_iter': num_iter},
-            {'algorithm': 'pml_quad', 'num_iter': num_iter},
-            {'algorithm': 'sirt', 'num_iter': num_iter},
-            {'algorithm': 'tikh', 'num_iter': num_iter},
-            {'algorithm': 'tv', 'num_iter': num_iter},
-            {'algorithm': 'grad', 'num_iter': num_iter},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            # {'algorithm': 'art'},
+            # {'algorithm': 'bart'},
+            {'algorithm': 'mlem'},
+            {'algorithm': 'osem'},
+            {'algorithm': 'ospml_hybrid'},
+            {'algorithm': 'ospml_quad'},
+            {'algorithm': 'pml_hybrid'},
+            {'algorithm': 'pml_quad'},
+            {'algorithm': 'sirt'},
+            {'algorithm': 'tikh'},
+            {'algorithm': 'tv'},
+            {'algorithm': 'grad'},
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'mlem', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'sirt', 'num_iter': num_iter, 'accelerated':
+            {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
         ]
         try:
@@ -153,14 +146,14 @@ def main(phantom, num_iter, max_iter, output_dir, ncore, parameters):
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'sinogram'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'rprojection'}},
                 # {'algorithm': tomopy.astra, 'options': {'proj_type': 'cuda', 'method': 'FBP_CUDA', 'FilterType': 'rsinogram'}},
-                {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options':
-                    {'proj_type': 'cuda', 'method': 'SIRT_CUDA', 'num_iter': num_iter}},
-                {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options':
-                    {'proj_type': 'cuda', 'method': 'CGLS_CUDA', 'num_iter': num_iter}},
-                {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options':
-                    {'proj_type': 'cuda', 'method': 'EM_CUDA', 'num_iter': num_iter}},
-                {'algorithm': tomopy.astra, 'num_iter': num_iter, 'options':
-                    {'proj_type': 'cuda', 'method': 'SART_CUDA', 'num_iter': num_iter}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'SIRT_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'CGLS_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'EM_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'SART_CUDA'}},
             ]
         except ImportError:
             tomopy.astra = None
@@ -241,45 +234,61 @@ def reconstruct(
         The maximum number iterations if the algorithm is iterative
     phantom : string
         The name of the phantom
-    term_crit : float
-        Benchmark ends early if reconstruction quality increases less than this
-        amount.
     """
     logger.info('{}'.format(params))
+
+    # padding was added to keep square image in the field of view
+    pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
+
+    # Determine the algorithm name in the filesystem
     if params['algorithm'] is tomopy.astra:
         algorithm = 'astra-' + params['options']['method'].lower()
     elif params['algorithm'] is tomopy.lprec:
-        algorithm = 'lprec-' + params['lpmethod']
+        algorithm = 'lprec-' + params['lpmethod'].lower()
     else:
-        algorithm = params['algorithm']
+        algorithm = params['algorithm'].lower()
     base_path = os.path.join(output_dir, phantom, algorithm)
     if 'device' in params and params['device'] == 'gpu':
         base_path = base_path + '_cuda'
-    # padding was added to keep square image in the field of view
-    pad = (data['sinogram'].shape[2] - data['original'].shape[2]) // 2
+
     # initial reconstruction guess; use defaults unique to each algorithm
     recon = None
     peak_quality = 0
     total_time = 0
-    end = 1 if 'num_iter' not in params else max_iter
-    step = 1 if 'num_iter' not in params else params['num_iter']
-    for i in range(step, end + step, step):
+
+    # Create evenly spaced samples across a log plot
+    if 'gridrec' in algorithm or 'fbp' in algorithm:
+        iters, steps = [1], [1]
+    else:
+        iters = np.unique(np.logspace(0, np.log10(max_iter)).astype(int))
+        steps = [iters[0]] + np.diff(iters).tolist()
+        np.testing.assert_array_equal(np.cumsum(steps), iters)
+
+    for i in range(len(iters)):
         # name the output file by combining the algorithm name with some
         # important (key) input parameters
         filename = algorithm
         for key_param in ['filter_name', 'device', 'interpolation']:
             if key_param in params:
                 filename = ".".join([filename, str(params[key_param])])
-        filename = os.path.join(base_path, "{}.{:03d}".format(filename, i))
+        filename = os.path.join(base_path, "{}.{:03d}".format(
+            filename, iters[i]
+        ))
+
         # look for the ouput; only reconstruct if it doesn't exist
         if os.path.isfile(filename + '.npz'):
             logger.info("{} exists!".format(filename))
             existing_data = np.load(filename + '.npz')
             recon = existing_data['recon']
-            # msssim = existing_data['msssim']
             wall_time = existing_data['time']
             total_time += wall_time
         else:
+            if 'gridrec' in algorithm or 'fbp' in algorithm:
+                pass
+            elif params['algorithm'] is tomopy.astra:
+                params['options']['num_iter'] = steps[i]
+            else:
+                params['num_iter'] = steps[i]
             try:
                 start = time.perf_counter()
                 # Do reconstruction in chunks because GPU memory is small
