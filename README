@@ -1,7 +1,7 @@
 This module generates image quality benchmarks for a tomography
 simulation with optional Poisson noise using TomoPy.
 
-You can run the benchmark using the provided run-benchmarking-cpu to run the CPU only functions or run-benchmarking-gpu to run the GPU only functions. The benchmarks are divided into three main scripts. project.py which will generate the simulated data. reconstruct.py which will use one dataset to do reconstruction for all of the TomoPy reconstruction algorithms and rate the results using MS-SSIM. summarize.py which will collect the image quality data into a JSON formatted text file. The results will be saved in a folder labeled tomopy.github.io/(CURRENT DATE). 
+You can run the benchmark using the provided run-benchmarking-cpu to run the CPU only functions or run-benchmarking-gpu to run the GPU only functions. The benchmarks are divided into three main scripts. project.py which will generate the simulated data. reconstruct.py which will use one dataset to do reconstruction for all of the TomoPy reconstruction algorithms and rate the results using MS-SSIM. summarize.py which will collect the image quality data into a JSON formatted text file.
 
 A conda environment to get you started is provided in tomopy-bench.yaml.
 
