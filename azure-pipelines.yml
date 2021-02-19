@@ -43,22 +43,20 @@ jobs:
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
-      source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
       BRANCH_NAME=$TOMOPY_VERSION"_CPU"
       git checkout -B $BRANCH_NAME
-    displayName: Checkout appropriate version branch
 
-  - script: |
       source activate tomopy-bench
       bash run-benchmarking-cpu.sh
     displayName: 'Run benchmarks'
 
   - script: |
-      echo $BRANCH_NAME
+      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
+      BRANCH_NAME=$TOMOPY_VERSION"_CPU"
       git checkout $BRANCH_NAME
+
       cd tomopy.github.io
-      git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
@@ -104,18 +102,17 @@ jobs:
       source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
       BRANCH_NAME=$TOMOPY_VERSION"_GPU"
-      git checkout -B $BRANCH_NAME
-    displayName: Checkout appropriate version branch
 
-  - script: |
-      source activate tomopy-bench
+      git checkout -B $BRANCH_NAME
       bash run-benchmarking-gpu.sh
     displayName: 'Run benchmarks'
 
   - script: |
+      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
+      BRANCH_NAME=$TOMOPY_VERSION"_GPU"
       git checkout $BRANCH_NAME
+
       cd tomopy.github.io
-      git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
