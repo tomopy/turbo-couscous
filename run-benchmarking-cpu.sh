@@ -13,7 +13,7 @@ python -Om benchmarking.project \
 
 python -Om benchmarking.reconstruct \
   --ncore 16 \
-  --max-iter 50 \
+  --max-iter 30 \
   --phantom peppers \
   --parameters "[{'algorithm': 'ospml_hybrid'},{'algorithm': 'tikh'}]" \
   --output-dir $outputDir \
