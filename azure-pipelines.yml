@@ -59,6 +59,7 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
+      git checkout $TOMOPY_VERSION
       cd tomopy.github.io
       git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
@@ -119,6 +120,7 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
+      git checkout $TOMOPY_VERSION
       cd tomopy.github.io
       git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
