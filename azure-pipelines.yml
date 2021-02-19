@@ -45,12 +45,8 @@ jobs:
   - script: |
       source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      exists=`git show-ref refs/heads/$TOMOPY_VERSION`
-      if [ -n "$exists" ]; then
-          git checkout $TOMOPY_VERSION
-      else
-          git checkout -b $TOMOPY_VERSION
-      fi
+      BRANCH_NAME=$TOMOPY_VERSION"_CPU"
+      git checkout -B $BRANCH_NAME
     displayName: Checkout appropriate version branch
 
   - script: |
@@ -59,14 +55,15 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      git checkout $TOMOPY_VERSION
+      echo $BRANCH_NAME
+      git checkout $BRANCH_NAME
       cd tomopy.github.io
       git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
-      git push -f https://$(PAT)@github.com/tomopy/tomopy.github.io
+      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
     displayName: 'Update benchmarking data repository'
 
   - script: |
@@ -106,12 +103,8 @@ jobs:
   - script: |
       source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      exists=`git show-ref refs/heads/$TOMOPY_VERSION`
-      if [ -n "$exists" ]; then
-          git checkout $TOMOPY_VERSION
-      else
-          git checkout -b $TOMOPY_VERSION
-      fi
+      BRANCH_NAME=$TOMOPY_VERSION"_GPU"
+      git checkout -B $BRANCH_NAME
     displayName: Checkout appropriate version branch
 
   - script: |
@@ -120,14 +113,14 @@ jobs:
     displayName: 'Run benchmarks'
 
   - script: |
-      git checkout $TOMOPY_VERSION
+      git checkout $BRANCH_NAME
       cd tomopy.github.io
       git config --global http.postBuffer 157286400
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
       git commit -m "Bi-monthly benchmark"
-      git push -f https://$(PAT)@github.com/tomopy/tomopy.github.io
+      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
     displayName: 'Update benchmarking data repository'
 
   - script: |
