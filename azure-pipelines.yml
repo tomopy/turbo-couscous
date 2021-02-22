@@ -104,11 +104,13 @@ jobs:
     displayName: 'Clone tomopy benchmarks repo'
 
   - script: |
+      cd tomopy.github.io
       source activate tomopy-bench
+
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
       BRANCH_NAME=$TOMOPY_VERSION"_GPU"
       git checkout -B $BRANCH_NAME
-
+      
       cd ..
       bash run-benchmarking-gpu.sh
     displayName: 'Run benchmarks'
@@ -120,7 +122,7 @@ jobs:
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
       BRANCH_NAME=$TOMOPY_VERSION"_CPU"
       git checkout $BRANCH_NAME
-      
+
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
       git add *
