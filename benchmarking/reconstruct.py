@@ -72,7 +72,7 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'gridrec', 'filter_name': 'parzen'},
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-            {'algorithm': 'fbp', 'filter_name': 'butterworth'},
+            # {'algorithm': 'fbp', 'filter_name': 'butterworth'},
             # {'algorithm': 'fbp', 'filter_name': 'cosine'},
             # fbp is currenlty broken, it doesn't
             # take filters into consideration
@@ -90,21 +90,21 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
             {'algorithm': 'pml_hybrid'},
             {'algorithm': 'pml_quad'},
             {'algorithm': 'sirt'},
-            {'algorithm': 'tikh'},
+            # {'algorithm': 'tikh'},
             {'algorithm': 'tv'},
-            {'algorithm': 'grad'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'cpu', 'interpolation': 'NN'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            {'algorithm': 'mlem', 'accelerated':
-                True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'grad'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'gpu', 'interpolation': 'NN'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'cpu', 'interpolation': 'NN'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            # {'algorithm': 'mlem', 'accelerated':
+            #     True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
             {'algorithm': 'sirt', 'accelerated':
