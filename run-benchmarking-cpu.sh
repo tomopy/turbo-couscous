@@ -15,7 +15,7 @@ python -Om benchmarking.reconstruct \
   --ncore 16 \
   --max-iter 30 \
   --phantom peppers \
-  --parameters "[{'algorithm': 'ospml_hybrid'},{'algorithm': 'tikh'}]" \
+  --parameters "[{'algorithm': 'ospml_hybrid'},{'algorithm': 'osem'}]" \
   --output-dir $outputDir \
 
 python -Om benchmarking.summarize \
