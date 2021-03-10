@@ -13,7 +13,7 @@ python -Om benchmarking.project \
 
 python -Om benchmarking.reconstruct \
   --ncore 16 \
-  --max-iter 30 \
+  --max-iter 50 \
   --phantom peppers \
   --parameters "[{'algorithm': 'mlem', 'num_iter': 5, 'accelerated': True, 'device': 'gpu', 'interpolation': 'NN'}, {'algorithm': 'mlem', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'LINEAR'},{'algorithm': 'mlem', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'CUBIC'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'NN'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'LINEAR'},{'algorithm': 'sirt', 'num_iter': 5, 'accelerated':True, 'device': 'gpu', 'interpolation': 'CUBIC'}]" \
   --output-dir $outputDir \
