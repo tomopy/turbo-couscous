@@ -6,7 +6,7 @@ outputDir=tomopy.github.io/$currentDate/cpu
 python -Om benchmarking.project \
   --poisson 500 \
   --trials 32 \
-  --width 1446 \
+  --width 1440 \
   --num-angles 1500 \
   --phantom peppers \
   --output-dir $outputDir \
