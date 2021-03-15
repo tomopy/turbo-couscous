@@ -8,4 +8,4 @@ dependencies:
   - numpy=1.15
   - python=3.6
   - tomopy
-  - xdesign=0.5.1
+  - xdesign=0.5.4
