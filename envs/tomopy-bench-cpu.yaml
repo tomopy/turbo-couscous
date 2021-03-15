@@ -5,7 +5,7 @@ channels:
 dependencies:
   - click
   - matplotlib=3
-  - numpy=1.15
+  - numpy=1
   - python=3.6
   - tomopy
-  - xdesign=0.5.4
+  - xdesign=0.5
