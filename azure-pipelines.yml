@@ -116,7 +116,7 @@ jobs:
       source activate tomopy-bench
       git clone https://github.com/tomopy/tomopy
       cd tomopy
-      python setup.py install --enable-cuda
+      python setup.py install --enable-cuda --cuda-arch=30
     displayName: Install TomoPy
 
   - script: |
