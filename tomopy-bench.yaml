@@ -8,9 +8,9 @@ dependencies:
   - click
   - coverage!=5.0.2
   - dxchange
-  - gcc_linux-64
+  - gcc_linux-64=7
   - git
-  - gxx_linux-64
+  - gxx_linux-64=7
   - h5py
   - libstdcxx-ng
   - libgcc-ng
