@@ -33,13 +33,25 @@ jobs:
       rm -rf tomopy.github.io
     displayName: Remove existing build environment  
 
-  - script: |
-      conda env create -n tomopy-bench -f envs/tomopy-bench-cpu.yaml 
+  - script: conda env create -n tomopy-bench -f envs/tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
     displayName: 'List conda environment'
 
+  - script: |
+      source activate tomopy-bench
+      git clone https://github.com/tomopy/tomopy
+      cd tomopy
+      python setup.py install
+    displayName: Install TomoPy
+
+  - script: |
+      source activate tomopy-bench
+      cd tomopy
+      pytest
+    displayName: Test TomoPy installation
+    
   - script: git clone https://github.com/tomopy/tomopy.github.io
     displayName: 'Clone tomopy benchmarks repo'
 
@@ -93,12 +105,24 @@ jobs:
         rm -rf tomopy.github.io
     displayName: Remove existing build environment
 
-  - script: |
-      conda env create -n tomopy-bench -f envs/tomopy-bench-gpu.yaml 
+    - script: conda env create -n tomopy-bench -f envs/tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
     displayName: 'List conda environment'
+
+  - script: |
+      source activate tomopy-bench
+      git clone https://github.com/tomopy/tomopy
+      cd tomopy
+      python setup.py install --enable-cuda
+    displayName: Install TomoPy
+
+  - script: |
+      source activate tomopy-bench
+      cd tomopy
+      pytest
+    displayName: Test TomoPy installation
 
   - script: |
       git clone https://github.com/tomopy/tomopy.github.io
