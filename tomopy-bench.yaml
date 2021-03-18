@@ -1,4 +1,4 @@
-name: tomopy-cpu
+name: tomopy-bench
 
 channels:
   - conda-forge
@@ -7,11 +7,8 @@ channels:
 dependencies:
   - click
   - coverage!=5.0.2
-  - dxchange
   - gcc_linux-64=7
-  - git
   - gxx_linux-64=7
-  - h5py
   - libstdcxx-ng
   - libgcc-ng
   - matplotlib=3
@@ -25,7 +22,6 @@ dependencies:
   - pyctest>0.0.10
   - pytest
   - python=3.6
-  - python-coveralls
   - pywavelets
   - scikit-build
   - scikit-image>=0.17
