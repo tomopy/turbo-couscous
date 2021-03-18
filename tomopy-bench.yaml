@@ -30,3 +30,4 @@ dependencies:
   - setuptools_scm_git_archive
   - timemory
   - xdesign=0.5
+  
