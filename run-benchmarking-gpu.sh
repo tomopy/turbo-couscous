@@ -4,18 +4,18 @@ currentDate=`date +%F`
 outputDir=tomopy.github.io/$currentDate/gpu
 
 python -Om benchmarking.project \
-  --poisson 500 \
-  --trials 32 \
-  --width 1446 \
-  --num-angles 1500 \
+  --poisson 5 \
+  --trials 4 \
+  --width 400 \
+  --num-angles 30 \
   --phantom peppers \
   --output-dir $outputDir \
 
 python -Om benchmarking.reconstruct \
   --ncore 16 \
-  --max-iter 50 \
+  --max-iter 20 \
   --phantom peppers \
-  --parameters "[{'algorithm': 'sirt', 'accelerated':True, 'device': 'gpu', 'interpolation': 'NN'},{'algorithm': 'sirt', 'accelerated':True, 'device': 'gpu', 'interpolation': 'LINEAR'},{'algorithm': 'sirt', 'accelerated':True, 'device': 'gpu', 'interpolation': 'CUBIC'}]" \
+  --parameters "[{'algorithm': 'sirt', 'accelerated':True, 'device': 'gpu', 'interpolation': 'NN'}]" \
   --output-dir $outputDir \
 
 python -Om benchmarking.summarize \
