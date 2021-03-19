@@ -35,7 +35,7 @@ jobs:
       rm -rf tomopy.github.io
     displayName: Remove existing build environment  
 
-  - script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
@@ -110,7 +110,7 @@ jobs:
         rm -rf tomopy.github.io
     displayName: Remove existing build environment
 
-  - script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
