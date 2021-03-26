@@ -18,6 +18,8 @@ jobs:
 
 - job: CPU_Benchmarks
 
+  timeoutInMinutes: 0
+
   pool:
     name: Default
     demands: 
@@ -33,7 +35,7 @@ jobs:
       rm -rf tomopy.github.io
     displayName: Remove existing build environment  
 
-  - script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
@@ -90,6 +92,8 @@ jobs:
 
 - job: GPU_Benchmarks
 
+  timeoutInMinutes: 0
+
   pool:
     name: Default
     demands:
@@ -106,7 +110,7 @@ jobs:
         rm -rf tomopy.github.io
     displayName: Remove existing build environment
 
-  - script: conda env create -n tomopy-bench -f tomopy-bench.yaml 
+  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
     displayName: 'Create benchmarking environment'
 
   - script: conda list -n tomopy-bench
