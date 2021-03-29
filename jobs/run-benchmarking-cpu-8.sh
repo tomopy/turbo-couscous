@@ -12,10 +12,11 @@ python -Om benchmarking.project \
   --output-dir $outputDir \
 
 python -Om benchmarking.reconstruct \
-  --ncore 8 \
+  --ncore 4 \
   --max-iter 50 \
   --phantom peppers \
   --output-dir $outputDir \
+  --parameters "[{'algorithm': 'pml_quad'},{'algorithm': 'sirt'}]"
 
 python -Om benchmarking.summarize \
   --phantom peppers \
