@@ -22,7 +22,7 @@ BRANCH_NAME=$TOMOPY_VERSION"_CPU"
 git checkout -B $BRANCH_NAME
 
 cd ..
-bash run-benchmarking-cpu-$1.sh 
+bash jobs/run-benchmarking-cpu-$1.sh 
 
 git config --global user.name "Dreycen Foiles"
 git config --global user.email "foilesdreycen@gmail.com"

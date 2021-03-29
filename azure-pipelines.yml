@@ -25,7 +25,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 1
+    - bash: bash jobs/cpu-benchmarking-env.sh 1
       displayName: Run job 1
 
 - job: CPU_Benchmark_2
@@ -37,7 +37,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 2
+    - bash: bash jobs/cpu-benchmarking-env.sh 2
       displayName: Run job 2
 
 - job: CPU_Benchmark_3
@@ -49,7 +49,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 3
+    - bash: bash jobs/cpu-benchmarking-env.sh 3
       displayName: Run job 3
 
 - job: CPU_Benchmark_4
@@ -61,7 +61,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 4
+    - bash: bash jobs/cpu-benchmarking-env.sh 4
       displayName: Run job 4
 
 - job: CPU_Benchmark_5
@@ -73,7 +73,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 5
+    - bash: bash jobs/cpu-benchmarking-env.sh 5
       displayName: Run job 5
 
 - job: CPU_Benchmark_6
@@ -85,7 +85,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 6
+    - bash: bash jobs/cpu-benchmarking-env.sh 6
       displayName: Run job 6
 
 - job: CPU_Benchmark_7
@@ -97,7 +97,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 7
+    - bash: bash jobs/cpu-benchmarking-env.sh 7
       displayName: Run job 7
 
 - job: CPU_Benchmark_8
@@ -109,7 +109,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 8
+    - bash: bash jobs/cpu-benchmarking-env.sh 8
       displayName: Run job 8
 
 - job: CPU_Benchmark_9
@@ -121,7 +121,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 9
+    - bash: bash jobs/cpu-benchmarking-env.sh 9
       displayName: Run job 9
 
 - job: CPU_Benchmark_10
@@ -133,7 +133,7 @@ jobs:
     demands: 
       - Agent.OS -equals Linux
   steps: 
-    - bash: bash cpu-benchmarking-env.sh 10
+    - bash: bash jobs/cpu-benchmarking-env.sh 10
       displayName: Run job 10
 
 - job: GPU_Benchmark_1
@@ -147,7 +147,7 @@ jobs:
       - Agent.OS -equals Linux
 
   steps: 
-    - bash: bash gpu-benchmarking-env.sh 1
+    - bash: bash jobs/gpu-benchmarking-env.sh 1
       displayName: Run job 1
 
 - job: GPU_Benchmark_2
@@ -161,7 +161,7 @@ jobs:
       - Agent.OS -equals Linux
 
   steps: 
-    - bash: bash gpu-benchmarking-env.sh 2
+    - bash: bash jobs/gpu-benchmarking-env.sh 2
       displayName: Run job 2
 
   
