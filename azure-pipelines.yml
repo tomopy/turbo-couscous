@@ -16,81 +16,127 @@ trigger:
 
 jobs:
 
-- job: CPU_Benchmarks
+- job: CPU_Benchmark_1
 
   timeoutInMinutes: 0
 
   pool:
     name: Default
     demands: 
-      - NO_GPU
       - Agent.OS -equals Linux
-  steps:
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 1
+      displayName: Run job 1
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
+- job: CPU_Benchmark_2
 
-  - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-    displayName: Remove existing build environment  
+  timeoutInMinutes: 0
 
-  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
-    displayName: 'Create benchmarking environment'
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 2
+      displayName: Run job 2
 
-  - script: conda list -n tomopy-bench
-    displayName: 'List conda environment'
+- job: CPU_Benchmark_3
 
-  - script: |
-      source activate tomopy-bench
-      git clone https://github.com/tomopy/tomopy
-      cd tomopy
-      python setup.py install
-    displayName: Install TomoPy
+  timeoutInMinutes: 0
 
-  - script: |
-      source activate tomopy-bench
-      cd tomopy
-      pytest
-    displayName: Test TomoPy installation
-    
-  - script: git clone https://github.com/tomopy/tomopy.github.io
-    displayName: 'Clone tomopy benchmarks repo'
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 3
+      displayName: Run job 3
 
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
+- job: CPU_Benchmark_4
 
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_CPU"
-      git checkout -B $BRANCH_NAME
-      
-      cd ..
-      bash run-benchmarking-cpu.sh
-    displayName: 'Run benchmarks'
+  timeoutInMinutes: 0
 
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 4
+      displayName: Run job 4
 
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_CPU"
-      git checkout $BRANCH_NAME
-      
-      git config --global user.name "Dreycen Foiles"
-      git config --global user.email "foilesdreycen@gmail.com"
-      git add *
-      git commit -m "Bi-monthly benchmark"
-      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
-    displayName: 'Update benchmarking data repository'
+- job: CPU_Benchmark_5
 
-  - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-      rm -rf tomopy
-    displayName: Remove existing build environment
+  timeoutInMinutes: 0
 
-- job: GPU_Benchmarks
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 5
+      displayName: Run job 5
+
+- job: CPU_Benchmark_6
+
+  timeoutInMinutes: 0
+
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 6
+      displayName: Run job 6
+
+- job: CPU_Benchmark_7
+
+  timeoutInMinutes: 0
+
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 7
+      displayName: Run job 7
+
+- job: CPU_Benchmark_8
+
+  timeoutInMinutes: 0
+
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 8
+      displayName: Run job 8
+
+- job: CPU_Benchmark_9
+
+  timeoutInMinutes: 0
+
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 9
+      displayName: Run job 9
+
+- job: CPU_Benchmark_10
+
+  timeoutInMinutes: 0
+
+  pool:
+    name: Default
+    demands: 
+      - Agent.OS -equals Linux
+  steps: 
+    - bash: bash cpu-benchmarking-env.sh 10
+      displayName: Run job 10
+
+- job: GPU_Benchmark_1
 
   timeoutInMinutes: 0
 
@@ -101,67 +147,21 @@ jobs:
       - Agent.OS -equals Linux
 
   steps: 
+    - bash: bash gpu-benchmarking-env.sh 1
+      displayName: Run job 1
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
+- job: GPU_Benchmark_2
 
-  - script: |
-        conda env remove --yes -n tomopy-bench
-        rm -rf tomopy.github.io
-    displayName: Remove existing build environment
+  timeoutInMinutes: 0
 
-  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
-    displayName: 'Create benchmarking environment'
+  pool:
+    name: Default
+    demands:
+      - CUDA_VERSION
+      - Agent.OS -equals Linux
 
-  - script: conda list -n tomopy-bench
-    displayName: 'List conda environment'
+  steps: 
+    - bash: bash gpu-benchmarking-env.sh 2
+      displayName: Run job 2
 
-  - script: |
-      source activate tomopy-bench
-      git clone https://github.com/tomopy/tomopy
-      cd tomopy
-      python setup.py install --enable-cuda --cuda-arch=30
-    displayName: Install TomoPy
-
-  - script: |
-      source activate tomopy-bench
-      cd tomopy
-      pytest
-    displayName: Test TomoPy installation
-
-  - script: |
-      git clone https://github.com/tomopy/tomopy.github.io
-    displayName: 'Clone tomopy benchmarks repo'
-
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_GPU"
-      git checkout -B $BRANCH_NAME
-      
-      cd ..
-      bash run-benchmarking-gpu.sh
-    displayName: 'Run benchmarks'
-
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_GPU"
-      git checkout $BRANCH_NAME
-
-      git config --global user.name "Dreycen Foiles"
-      git config --global user.email "foilesdreycen@gmail.com"
-      git add *
-      git commit -m "Bi-monthly benchmark"
-      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
-    displayName: 'Update benchmarking data repository'
-
-  - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-      rm -rf tomopy
-    displayName: Remove existing build environment
+  
