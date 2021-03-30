@@ -9,11 +9,11 @@ conda list -n tomopy-bench
 
 source activate tomopy-bench
 git clone https://github.com/tomopy/tomopy
-cd ~/tomopy
+cd tomopy
 python setup.py install
 pytest
 
-cd ~
+cd ..
 git clone https://github.com/tomopy/tomopy.github.io
 
 cd tomopy.github.io
@@ -30,7 +30,8 @@ git add *
 git commit -m "Bi-monthly benchmark"
 git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
 
-cd ~
+cd ..
+conda deactivate
 conda env remove --yes -n tomopy-bench
 rm -rf tomopy.github.io
 rm -rf tomopy
