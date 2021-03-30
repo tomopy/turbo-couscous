@@ -48,6 +48,8 @@ jobs:
         algorithmName: 'sirt'
       SIRT_CPU:
         algorithmName: 'sirt_cpu'
+      TV:
+        algorithmName: 'tv'
 
   steps:
 
