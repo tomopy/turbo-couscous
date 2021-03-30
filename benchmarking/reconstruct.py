@@ -55,7 +55,6 @@ logger = logging.getLogger(__name__)
     default=None,
     help='Name of algorithm to use given as a string',
 )
-
 def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     """Reconstruct data using TomoPy.
 
@@ -94,12 +93,12 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'CUBIC'}
             ]
-        else: 
+        else:
             parameters = [{'algorithm': algorithm}]
 
     if parameters is not None:
         parameters = ast.literal_eval(parameters)
-            
+
     else:
         parameters = [
             # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?

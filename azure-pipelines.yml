@@ -103,7 +103,7 @@ jobs:
         --max-iter 50 \
         --phantom peppers \
         --output-dir $outputDir \
-        --parameters $(algorithmName)
+        --algorithm $(algorithmName)
 
       python -Om benchmarking.summarize \
         --phantom peppers \
@@ -205,7 +205,7 @@ jobs:
         --max-iter 50 \
         --phantom peppers \
         --output-dir $outputDir \
-        --parameters $(algorithmName)
+        --algorithm $(algorithmName)
 
       python -Om benchmarking.summarize \
         --phantom peppers \
