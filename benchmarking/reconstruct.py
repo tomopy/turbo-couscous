@@ -79,10 +79,14 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
             parameters = [{'algorithm': 'mlem'}]
         elif parameters == 'osem':
             parameters = [{'algorithm': 'osem'}]
+        elif parameters == 'ospml_quad':
+            parameters = [{'algorithm': 'ospml_quad'}]
         elif parameters == 'osmpl_hybrid':
             parameters = [{'algorithm': 'ospml_hybrid'}]
         elif parameters == 'pml_hybrid':
-            parameters = [{'algorithm': 'ospml_quad'}]
+            parameters = [{'algorithm': 'pml_hybrid'}]
+        elif parameters == 'pml_quad':
+            parameters == [{'algorithm': 'pml_hybrid'}]
         elif parameters == 'sirt':
             parameters = [{'algorithm': 'sirt'}]
         elif parameters == 'sirt_cpu':
@@ -102,7 +106,7 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
                  True, 'device': 'gpu', 'interpolation': 'CUBIC'}
             ]
         elif parameters == 'tv':
-            parameters = {'algorithm': 'tv'}
+            parameters = [{'algorithm': 'tv'}]
         else:
             parameters = ast.literal_eval(parameters)
     else:
