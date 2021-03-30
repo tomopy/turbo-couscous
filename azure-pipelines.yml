@@ -46,8 +46,6 @@ jobs:
         algorithmName: 'pml_quad'
       SIRT:
         algorithmName: 'sirt'
-      SIRT_CPU:
-        algorithmName: 'sirt_cpu'
       TV:
         algorithmName: 'tv'
 
