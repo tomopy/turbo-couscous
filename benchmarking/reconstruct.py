@@ -61,7 +61,50 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
     if parameters is not None:
-        parameters = ast.literal_eval(parameters)
+        if parameters == 'gridrec':
+            parameters = [
+                {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+                {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+                {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+                {'algorithm': 'gridrec', 'filter_name': 'hann'},
+                {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+                {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+                {'algorithm': 'gridrec', 'filter_name': 'shepp'}
+            ]
+        elif parameters == 'art':
+            parameters = {'algorithm': 'art'}
+        elif parameters == 'bart':
+            parameters = {'algorithm': 'bart'}
+        elif parameters == 'mlem':
+            parameters = {'algorithm': 'mlem'}
+        elif parameters == 'osem':
+            parameters = {'algorithm': 'osem'}
+        elif parameters == 'osmpl_hybrid':
+            parameters = {'algorithm': 'ospml_hybrid'}
+        elif parameters == 'pml_hybrid':
+            parameters = {'algorithm': 'ospml_quad'}
+        elif parameters == 'sirt':
+            parameters = {'algorithm': 'sirt'}
+        elif parameters == 'sirt_cpu':
+            parameters = [
+                {'algorithm': 'sirt', 'accelerated':
+                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+                {'algorithm': 'sirt', 'accelerated':
+                 True, 'device': 'cpu', 'interpolation': 'CUBIC'}
+            ]
+        elif parameters == 'sirt_gpu':
+            parameters = [
+                {'algorithm': 'sirt', 'accelerated':
+                 True, 'device': 'gpu', 'interpolation': 'NN'},
+                {'algorithm': 'sirt', 'accelerated':
+                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+                {'algorithm': 'sirt', 'accelerated':
+                 True, 'device': 'gpu', 'interpolation': 'CUBIC'}
+            ]
+        elif parameters == 'tv':
+            parameters = {'algorithm': 'tv'}
+        else:
+            parameters = ast.literal_eval(parameters)
     else:
         parameters = [
             # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?
