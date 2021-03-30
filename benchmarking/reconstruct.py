@@ -50,7 +50,7 @@ logger = logging.getLogger(__name__)
     default=None,
     help='Python List of Python Dict of tomopy parameters as string',
 )
-def main(phantom, max_iter, output_dir, ncore, parameters):
+def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     """Reconstruct data using TomoPy.
 
     Automatically chooses which algorithms to run based the TomoPy
@@ -60,8 +60,8 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
     """
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
-    if parameters is not None:
-        if parameters == 'gridrec':
+    if algorithm is not None:
+        if algorithm == 'gridrec':
             parameters = [
                 {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
                 {'algorithm': 'gridrec', 'filter_name': 'cosine'},
@@ -71,32 +71,15 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
                 {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
                 {'algorithm': 'gridrec', 'filter_name': 'shepp'}
             ]
-        elif parameters == 'art':
-            parameters = [{'algorithm': 'art'}]
-        elif parameters == 'bart':
-            parameters = [{'algorithm': 'bart'}]
-        elif parameters == 'mlem':
-            parameters = [{'algorithm': 'mlem'}]
-        elif parameters == 'osem':
-            parameters = [{'algorithm': 'osem'}]
-        elif parameters == 'ospml_quad':
-            parameters = [{'algorithm': 'ospml_quad'}]
-        elif parameters == 'osmpl_hybrid':
-            parameters = [{'algorithm': 'ospml_hybrid'}]
-        elif parameters == 'pml_hybrid':
-            parameters = [{'algorithm': 'pml_hybrid'}]
-        elif parameters == 'pml_quad':
-            parameters == [{'algorithm': 'pml_hybrid'}]
-        elif parameters == 'sirt':
-            parameters = [{'algorithm': 'sirt'}]
-        elif parameters == 'sirt_cpu':
+        elif algorithm == 'sirt':
             parameters = [
+                {'algorithm': 'sirt'},
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'cpu', 'interpolation': 'LINEAR'},
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'cpu', 'interpolation': 'CUBIC'}
             ]
-        elif parameters == 'sirt_gpu':
+        elif algorithm == 'sirt_gpu':
             parameters = [
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'NN'},
@@ -105,10 +88,12 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'CUBIC'}
             ]
-        elif parameters == 'tv':
-            parameters = [{'algorithm': 'tv'}]
-        else:
-            parameters = ast.literal_eval(parameters)
+        else: 
+            parameters = [{'algorithm': algorithm}]
+
+    if parameters is not None:
+        parameters = ast.literal_eval(parameters)
+            
     else:
         parameters = [
             # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?
