@@ -50,6 +50,12 @@ logger = logging.getLogger(__name__)
     default=None,
     help='Python List of Python Dict of tomopy parameters as string',
 )
+@click.option(
+    '--algorithm',
+    default=None,
+    help='Name of algorithm to use given as a string',
+)
+
 def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     """Reconstruct data using TomoPy.
 
