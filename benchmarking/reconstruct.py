@@ -72,19 +72,19 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
                 {'algorithm': 'gridrec', 'filter_name': 'shepp'}
             ]
         elif parameters == 'art':
-            parameters = {'algorithm': 'art'}
+            parameters = [{'algorithm': 'art'}]
         elif parameters == 'bart':
-            parameters = {'algorithm': 'bart'}
+            parameters = [{'algorithm': 'bart'}]
         elif parameters == 'mlem':
-            parameters = {'algorithm': 'mlem'}
+            parameters = [{'algorithm': 'mlem'}]
         elif parameters == 'osem':
-            parameters = {'algorithm': 'osem'}
+            parameters = [{'algorithm': 'osem'}]
         elif parameters == 'osmpl_hybrid':
-            parameters = {'algorithm': 'ospml_hybrid'}
+            parameters = [{'algorithm': 'ospml_hybrid'}]
         elif parameters == 'pml_hybrid':
-            parameters = {'algorithm': 'ospml_quad'}
+            parameters = [{'algorithm': 'ospml_quad'}]
         elif parameters == 'sirt':
-            parameters = {'algorithm': 'sirt'}
+            parameters = [{'algorithm': 'sirt'}]
         elif parameters == 'sirt_cpu':
             parameters = [
                 {'algorithm': 'sirt', 'accelerated':
