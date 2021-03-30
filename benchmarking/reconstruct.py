@@ -65,7 +65,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     """
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
-    if algorithm is not None:
+    if parameters is not None:
+        parameters = ast.literal_eval(parameters)
+
+    elif algorithm is not None:
         if algorithm == 'gridrec':
             parameters = [
                 {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
@@ -74,7 +77,7 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'gridrec', 'filter_name': 'hann'},
                 {'algorithm': 'gridrec', 'filter_name': 'parzen'},
                 {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
-                {'algorithm': 'gridrec', 'filter_name': 'shepp'}
+                {'algorithm': 'gridrec', 'filter_name': 'shepp'},
             ]
         elif algorithm == 'sirt':
             parameters = [
@@ -82,7 +85,7 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'cpu', 'interpolation': 'LINEAR'},
                 {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'cpu', 'interpolation': 'CUBIC'}
+                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             ]
         elif algorithm == 'sirt_gpu':
             parameters = [
@@ -91,13 +94,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'LINEAR'},
                 {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'gpu', 'interpolation': 'CUBIC'}
+                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
             ]
         else:
             parameters = [{'algorithm': algorithm}]
-
-    if parameters is not None:
-        parameters = ast.literal_eval(parameters)
 
     else:
         parameters = [
