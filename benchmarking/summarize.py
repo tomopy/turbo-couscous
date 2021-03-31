@@ -49,7 +49,14 @@ logger = logging.getLogger(__name__)
     type=str,
 )
 @click.option('-v', '--verbose', is_flag=True)
-def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=False):
+def summarize(
+    phantom,
+    output_dir,
+    trials,
+    title,
+    summary_file=None,
+    verbose=False,
+):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
@@ -57,6 +64,7 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
     if verbose:
         logger.setLevel(level=logging.DEBUG)
     base_path = os.path.join(output_dir, phantom)
+
     # Load data from file or make empty dictionary
     if summary_file is None:
         summary_file = os.path.join(base_path, 'summary.json')
@@ -91,10 +99,10 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
 
 
 def image_quality_vs_time_plot(
-        plot_name,
-        results,
-        trials=1,
-        title=None,
+    plot_name,
+    results,
+    trials=1,
+    title=None,
 ):
     """Create a lineplot with errorbars of image quality vs time.
 
@@ -156,14 +164,18 @@ def image_quality_vs_time_plot(
     plt.xlim([0.1, 3600])
     plt.semilogx(basex=2)
     plt.xticks(
-        # 3*3600, 6*3600, 12*3600, 24*3600],
-        [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600],
-        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m',
-            '30m', '1h']  # , '3h',  # '6h', '12h', '24h'],
+        [0.1, 1, 5, 10, 30, 60, 5 * 60, 10 * 60, 30 * 60, 3600],
+        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h'],
     )
 
-    plt.legend(results.keys(), ncol=1, handlelength=3,
-               bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend(
+        results.keys(),
+        ncol=1,
+        handlelength=3,
+        bbox_to_anchor=(1.05, 1),
+        loc=2,
+        borderaxespad=0.,
+    )
     plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
     if title is None:
@@ -183,7 +195,9 @@ def concat_recons(algo_folder, base_path):
     # split into chunks of five images
     for i in range(0, np.ceil(len(recons) / 5).astype(int)):
         combined = np.concatenate(
-            recons[5*i:min(len(recons), 5*(i+1))], axis=1)
+            recons[5 * i:min(len(recons), 5 * (i + 1))],
+            axis=1,
+        )
         plt.imsave(algo_folder + '-{}.png'.format(i), combined)
 
 
@@ -246,8 +260,8 @@ def scrape_image_quality(algo_folder, original):
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
 
-    num_iter, quality, error, wall_time = zip(*sorted(zip(
-        num_iter, quality, error, wall_time)))
+    num_iter, quality, error, wall_time = zip(
+        *sorted(zip(num_iter, quality, error, wall_time)))
 
     logger.debug("num_iter: {}".format(num_iter))
     logger.debug("quality: {}".format(quality))
