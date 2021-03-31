@@ -342,7 +342,7 @@ def reconstruct(
                 return
             os.makedirs(base_path, exist_ok=True)
             # save all information
-            np.savez(
+            np.savez_compressed(
                 filename + '.npz',
                 recon=recon,
                 time=wall_time,
