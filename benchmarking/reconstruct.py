@@ -69,8 +69,8 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
         parameters = ast.literal_eval(parameters)
 
     elif algorithm is not None:
-        if algorithm == 'gridrec':
-            parameters = [
+        default_parameters = {
+            'gridrec': [
                 {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
                 {'algorithm': 'gridrec', 'filter_name': 'cosine'},
                 {'algorithm': 'gridrec', 'filter_name': 'hamming'},
@@ -78,24 +78,18 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'gridrec', 'filter_name': 'parzen'},
                 {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
                 {'algorithm': 'gridrec', 'filter_name': 'shepp'},
-            ]
-        elif algorithm == 'sirt':
-            parameters = [
+            ],
+            'sirt': [
                 {'algorithm': 'sirt'},
-                {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-                {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+                {'algorithm': 'sirt', 'accelerated': True,
+                'device': 'cpu', 'interpolation': 'LINEAR'},
+                {'algorithm': 'sirt', 'accelerated': True,
+                'device': 'cpu', 'interpolation': 'CUBIC'},
             ]
-        elif algorithm == 'sirt_gpu':
-            parameters = [
-                {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'gpu', 'interpolation': 'NN'},
-                {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            ]
+        }
+
+        if algorithm in default_parameters:
+            parameters = default_parameters[algorithm]
         else:
             parameters = [{'algorithm': algorithm}]
 
