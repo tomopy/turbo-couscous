@@ -260,7 +260,7 @@ def reconstruct(
     if 'gridrec' in algorithm or 'fbp' in algorithm:
         iters, steps = [1], [1]
     else:
-        iters = np.unique(np.logspace(0, np.log10(max_iter)).astype(int))
+        iters = np.unique(np.logspace(0, np.log10(max_iter), num=16).astype(int))
         steps = [iters[0]] + np.diff(iters).tolist()
         np.testing.assert_array_equal(np.cumsum(steps), iters)
 
