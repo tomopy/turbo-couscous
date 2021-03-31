@@ -83,7 +83,7 @@ jobs:
       cd tomopy.github.io
       source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_CPU"
+      BRANCH_NAME="$TOMOPY_VERSION$(algorithmName)"
       git checkout -B $BRANCH_NAME
       
       cd ..
@@ -217,7 +217,7 @@ jobs:
       cd tomopy.github.io
       source activate tomopy-bench
       TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME=$TOMOPY_VERSION"_GPU"
+      BRANCH_NAME="$TOMOPY_VERSION$(algorithmName)"
       git checkout $BRANCH_NAME
       git config --global user.name "Dreycen Foiles"
       git config --global user.email "foilesdreycen@gmail.com"
