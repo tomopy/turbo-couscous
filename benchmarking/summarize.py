@@ -9,13 +9,14 @@ import json
 import logging
 import os
 import re
-from collections import defaultdict
 
 import click
 import matplotlib.pyplot as plt
 import numpy as np
 import tomopy
 import xdesign as xd
+
+from .linestyles import linestyles
 
 logger = logging.getLogger(__name__)
 
@@ -87,56 +88,6 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
     image_quality_vs_time_plot(summary_plot, all_results, trials, title)
-
-
-cm = plt.cm.plasma
-linestyles = defaultdict(
-    lambda: {'linestyle': '-', 'marker': '', 'color': cm(0)},
-    {
-        # direct methods
-        'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
-        'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
-        'astra-fbp_cuda': {'linestyle': '', 'marker': 'X', 'color': cm(0.1),
-                           'fillstyle': 'none', },
-        # iterative methods
-        'art': {'linestyle': '-', 'marker': '^', 'color': cm(0.4)},
-        'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
-        'astra-sart_cuda': {'linestyle': '-', 'marker': '>', 'color': cm(0.45),
-                            'fillstyle': 'none', },
-        'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5)},
-        'sirt_cuda': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
-                      'fillstyle': 'none', },
-        'astra-sirt_cuda': {'linestyle': '--', 'marker': '<', 'color': cm(0.5),
-                            'fillstyle': 'none', },
-
-        'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65)},
-        'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
-        'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
-        'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
-        'lprec-em': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0),
-                     'fillstyle': 'none', },
-        'astra-em_cuda': {'linestyle': '--', 'marker': 'o', 'color': cm(1.0),
-                          'fillstyle': 'none', },
-        'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
-        'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
-        # gradient methods
-        'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
-        'lprec-grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6),
-                       'fillstyle': 'none', },
-        'lprec-cg': {'linestyle': '--', 'marker': 's', 'color': cm(0.6),
-                     'fillstyle': 'none', },
-        'astra-cgls_cuda': {'linestyle': ':', 'marker': 's', 'color': cm(0.6),
-                            'fillstyle': 'none', },
-
-        'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
-        'lprec-tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8),
-                     'fillstyle': 'none', },
-        'lprec-tve': {'linestyle': '--', 'marker': 'd', 'color': cm(0.8),
-                      'fillstyle': 'none', },
-        'lprec-tvl1': {'linestyle': ':', 'marker': 'd', 'color': cm(0.8),
-                       'fillstyle': 'none', },
-    },
-)
 
 
 def image_quality_vs_time_plot(
