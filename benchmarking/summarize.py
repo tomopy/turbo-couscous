@@ -15,6 +15,7 @@ import click
 import matplotlib.pyplot as plt
 import numpy as np
 import tomopy
+import xdesign as xd
 
 logger = logging.getLogger(__name__)
 
@@ -65,14 +66,15 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
     else:
         all_results = dict()
     logger.info("Summary is located at {}".format(summary_file))
+
+    # Load the original for comparison
+    original = np.load(os.path.join(output_dir, phantom,
+                                    'simulated_data.npz'))['original']
+
     # Search the phantom folder for results and summarize them
     for folder in glob.glob(os.path.join(base_path, "*")):
         if os.path.isdir(folder):
-            # Now using python wall times instead of pyctest times
-            # all_results.update(
-            #     scrape_algorithm_times(
-            #         os.path.join(folder, 'run_tomopy.json')))
-            algo_results = scrape_image_quality(folder)
+            algo_results = scrape_image_quality(folder, original)
             algo = os.path.basename(folder)
             if algo in all_results:
                 all_results[algo].update(algo_results)
@@ -80,6 +82,7 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
                 all_results[algo] = algo_results
             concat_recons(folder, base_path)
             logger.info("Found results for {}".format(algo))
+
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
@@ -233,17 +236,21 @@ def concat_recons(algo_folder, base_path):
         plt.imsave(algo_folder + '-{}.png'.format(i), combined)
 
 
-def scrape_image_quality(algo_folder):
+def scrape_image_quality(algo_folder, original):
     """Scrape the quality std error and iteration numbers from the files.
 
-    {algo_folder} is a folder containing files {algo}.{num_iter}.npz with
-    keyword "mssim" pointing to an array of quality values.
+    {algo_folder} is a folder containing files {algo}.{num_iter}.npz which
+    contain key 'recon' which is the recosntructed images for comparison and
+    key 'total_time' which is the total reconstruction time for the image in
+    the file.
 
-    Return a dictionary for the folder containing three lists for the
-    concatenated image quality at each iteration, std error at each iteration,
-    and the number of each iteration. The length of the lists is the number of
-    files in {algo_folder}.
+    Return a dictionary for the folder containing lists for the concatenated
+    image quality at each iteration, std error at each iteration, the number of
+    each iteration, and the total wall time for each iteration. The length of
+    the lists is the number of files in {algo_folder}.
     """
+    dynamic_range = np.max(original)
+
     quality = list()
     error = list()
     num_iter = list()
@@ -263,8 +270,21 @@ def scrape_image_quality(algo_folder):
             # get the iteration number from the filename sans extension
             i = keywords[-2]
             i = int(i)
+
         try:
-            msssim = np.load(file[:-3] + "msssim.npy")
+            # compute quality metrics
+            recon = data['recon']
+            pad = (recon.shape[-1] - original.shape[-1]) // 2
+            msssim = np.empty(len(recon))
+            for z in range(len(recon)):
+                # compute the reconstructed image quality metrics
+                scales, msssim[z], quality_maps = xd.msssim(
+                    original[z],
+                    recon[z, pad:recon.shape[1] - pad,
+                          pad:recon.shape[2] - pad],
+                    L=dynamic_range,
+                    sigma=11,
+                )
             if np.any(np.isnan(msssim)):
                 logger.error("Quality rating contains NaN!")
             quality.append(np.nanmean(msssim))
