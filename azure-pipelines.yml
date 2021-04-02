@@ -28,26 +28,26 @@ jobs:
     matrix:
       GRIDREC:
         algorithmName: 'gridrec'
-      ART:
-        algorithmName: 'art'
-      BART:
-        algorithmName: 'bart'
-      MLEM:
-        algorithmName: 'mlem'
-      OSEM: 
-        algorithmName: 'osem'
-      OSPML_Hybrid:
-        algorithmName: 'ospml_hybrid'
-      OSPML_Quad: 
-        algorithmName: 'ospml_quad'
-      PML_Hybrid: 
-        algorithmName: 'pml_hybrid'
-      PML_Quad: 
-        algorithmName: 'pml_quad'
-      SIRT:
-        algorithmName: 'sirt'
-      TV:
-        algorithmName: 'tv'
+#       ART:
+#         algorithmName: 'art'
+#       BART:
+#         algorithmName: 'bart'
+#       MLEM:
+#         algorithmName: 'mlem'
+#       OSEM: 
+#         algorithmName: 'osem'
+#       OSPML_Hybrid:
+#         algorithmName: 'ospml_hybrid'
+#       OSPML_Quad: 
+#         algorithmName: 'ospml_quad'
+#       PML_Hybrid: 
+#         algorithmName: 'pml_hybrid'
+#       PML_Quad: 
+#         algorithmName: 'pml_quad'
+#       SIRT:
+#         algorithmName: 'sirt'
+#       TV:
+#         algorithmName: 'tv'
 
   steps:
 
