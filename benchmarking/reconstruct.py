@@ -82,9 +82,9 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             'sirt': [
                 {'algorithm': 'sirt'},
                 {'algorithm': 'sirt', 'accelerated': True,
-                'device': 'cpu', 'interpolation': 'LINEAR'},
+                 'device': 'cpu', 'interpolation': 'LINEAR'},
                 {'algorithm': 'sirt', 'accelerated': True,
-                'device': 'cpu', 'interpolation': 'CUBIC'},
+                 'device': 'cpu', 'interpolation': 'CUBIC'},
             ]
         }
 
