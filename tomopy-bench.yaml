@@ -8,6 +8,7 @@ dependencies:
   - click
   - coverage!=5.0.2
   - gcc_linux-64=7
+  - git
   - gxx_linux-64=7
   - libstdcxx-ng
   - libgcc-ng
