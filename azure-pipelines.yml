@@ -14,222 +14,179 @@ schedules:
 trigger:
 - master
 
-jobs:
+stages:
 
-- job: CPU_Benchmarks
-  timeoutInMinutes: 0
+- stage: Run_benchmarks
+
+  jobs:
+
+  - job: CPU_Benchmarks
+    timeoutInMinutes: 0
+    dependsOn: Compute_projection
+
+    pool:
+      name: Default
+      demands: 
+        - Agent.OS -equals Linux
+
+    strategy:
+      matrix:
+        GRIDREC:
+          algorithmName: 'gridrec'
+  #       ART:
+  #         algorithmName: 'art'
+  #       BART:
+  #         algorithmName: 'bart'
+  #       MLEM:
+  #         algorithmName: 'mlem'
+  #       OSEM: 
+  #         algorithmName: 'osem'
+  #       OSPML_Hybrid:
+  #         algorithmName: 'ospml_hybrid'
+  #       OSPML_Quad: 
+  #         algorithmName: 'ospml_quad'
+  #       PML_Hybrid: 
+  #         algorithmName: 'pml_hybrid'
+  #       PML_Quad: 
+  #         algorithmName: 'pml_quad'
+  #       SIRT:
+  #         algorithmName: 'sirt'
+  #       TV:
+  #         algorithmName: 'tv'
+
+    steps:
+
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
+
+    - download: current
+      artifact: local
+
+    - script: |
+        conda env remove --yes -n tomopy-bench
+        rm -rf tomopy.github.io
+      displayName: Remove existing build environment  
+      
+    - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
+      displayName: 'Create benchmarking environment'
+
+    - script: conda list -n tomopy-bench
+      displayName: 'List conda environment'
+
+    - script: |
+        source activate tomopy-bench
+        git clone https://github.com/tomopy/tomopy
+        cd tomopy
+        python setup.py install
+      displayName: Install TomoPy
+
+    - script: |
+        source activate tomopy-bench
+    
+        python -Om benchmarking.reconstruct \
+          --ncore 4 \
+          --max-iter 50 \
+          --output-dir local \
+          --algorithm $(algorithmName)
+      displayName: 'Run benchmarks'
+
+    - publish: local
+      artifact: local
+
+  - job: GPU_Benchmarks
+    timeoutInMinutes: 0
+    dependsOn: Compute_projection
+
+    pool:
+      name: Default
+      demands:
+        - CUDA_VERSION
+        - Agent.OS -equals Linux
+
+    strategy:
+      matrix:
+        SIRT_GPU:
+          algorithmName: 'sirt_gpu'
+        # MLEM_GPU:
+        #   algorithmName: 'mlem_gpu'
+
+    steps: 
+
+    - bash: echo "##vso[task.prependpath]$CONDA/bin"
+      displayName: Add conda to PATH
+
+    - download: current
+      artifact: local
+
+    - script: |
+          conda env remove --yes -n tomopy-bench
+          rm -rf tomopy.github.io
+      displayName: Remove existing build environment
+
+    - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
+      displayName: 'Create benchmarking environment'
+
+    - script: conda list -n tomopy-bench
+      displayName: 'List conda environment'
+
+    - script: |
+        source activate tomopy-bench
+        git clone https://github.com/tomopy/tomopy
+        cd tomopy
+        python setup.py install --enable-cuda --cuda-arch=30
+      displayName: Install TomoPy
+
+    - script: |
+        source activate tomopy-bench
+
+        python -Om benchmarking.reconstruct \
+          --ncore 4 \
+          --max-iter 50 \
+          --algorithm $(algorithmName)
+          --output-dir local
+      displayName: 'Run benchmarks'
+
+    - publish: local
+      artifact: local
+
+    # - script: |
+    #     conda env remove --yes -n tomopy-bench
+    #     rm -rf tomopy.github.io
+    #     rm -rf tomopy
+    #   displayName: Remove existing build environment
+  
+- stage: Summarize_results
 
   pool:
     name: Default
     demands: 
       - Agent.OS -equals Linux
 
-  strategy:
-    matrix:
-      GRIDREC:
-        algorithmName: 'gridrec'
-#       ART:
-#         algorithmName: 'art'
-#       BART:
-#         algorithmName: 'bart'
-#       MLEM:
-#         algorithmName: 'mlem'
-#       OSEM: 
-#         algorithmName: 'osem'
-#       OSPML_Hybrid:
-#         algorithmName: 'ospml_hybrid'
-#       OSPML_Quad: 
-#         algorithmName: 'ospml_quad'
-#       PML_Hybrid: 
-#         algorithmName: 'pml_hybrid'
-#       PML_Quad: 
-#         algorithmName: 'pml_quad'
-#       SIRT:
-#         algorithmName: 'sirt'
-#       TV:
-#         algorithmName: 'tv'
-
   steps:
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
+  - download: current
+    artifact: gridrec
+
+  - download: current
+    artifact: sirt_gpu
+
+  - bash: ls
+    displayName: list directories
 
   - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-    displayName: Remove existing build environment  
-  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
-    displayName: 'Create benchmarking environment'
-
-  - script: conda list -n tomopy-bench
-    displayName: 'List conda environment'
-
-  - script: |
-      source activate tomopy-bench
-      git clone https://github.com/tomopy/tomopy
-      cd tomopy
-      python setup.py install
-    displayName: Install TomoPy
-  - script: |
-      source activate tomopy-bench
-      cd tomopy
-      pytest
-    displayName: Test TomoPy installation
-    
-  - script: git clone https://github.com/tomopy/tomopy.github.io
-    displayName: 'Clone tomopy benchmarks repo'
-
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
-      git checkout -B $BRANCH_NAME
-      
-      cd ..
       currentDate=`date +%F`
-      outputDir=tomopy.github.io/$currentDate/cpu
-
-      python -Om benchmarking.project \
-        --poisson 500 \
-        --trials 4 \
-        --width 1446 \
-        --num-angles 1500 \
-        --phantom peppers \
-        --output-dir $outputDir \
-
-      python -Om benchmarking.reconstruct \
-        --ncore 4 \
-        --max-iter 50 \
-        --phantom peppers \
-        --output-dir $outputDir \
-        --algorithm $(algorithmName)
+      outputDir=tomopy.github.io/$currentDate
 
       python -Om benchmarking.summarize \
-        --phantom peppers \
-        --trials 4 \
-        --output-dir $outputDir \
-    displayName: 'Run benchmarks'
+            --phantom peppers \
+            --trials 4 \
+            --output-dir $outputDir \
+
+    displayName: Compile data
 
   - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
-      git checkout $BRANCH_NAME
-      
-      git config --global user.name "Dreycen Foiles"
-      git config --global user.email "foilesdreycen@gmail.com"
-      git add *
-      git commit -m "Bi-monthly benchmark"
-      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
-    displayName: 'Update benchmarking data repository'
-
-  - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-      rm -rf tomopy
-    displayName: Remove existing build environment
-
-- job: GPU_Benchmarks
-
-  timeoutInMinutes: 0
-
-  pool:
-    name: Default
-    demands:
-      - CUDA_VERSION
-      - Agent.OS -equals Linux
-
-  strategy:
-    matrix:
-      SIRT_GPU:
-        algorithmName: 'sirt_gpu'
-      # MLEM_GPU:
-      #   algorithmName: 'mlem_gpu'
-
-  steps: 
-
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Add conda to PATH
-
-  - script: |
-        conda env remove --yes -n tomopy-bench
-        rm -rf tomopy.github.io
-    displayName: Remove existing build environment
-
-  - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
-    displayName: 'Create benchmarking environment'
-
-  - script: conda list -n tomopy-bench
-    displayName: 'List conda environment'
-
-  - script: |
-      source activate tomopy-bench
-      git clone https://github.com/tomopy/tomopy
-      cd tomopy
-      python setup.py install --enable-cuda --cuda-arch=30
-    displayName: Install TomoPy
-
-  - script: |
-      source activate tomopy-bench
-      cd tomopy
-      pytest
-    displayName: Test TomoPy installation
-
-  - script: |
-      git clone https://github.com/tomopy/tomopy.github.io
-    displayName: 'Clone tomopy benchmarks repo'
-
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
-      git checkout -B $BRANCH_NAME
-      
-      cd ..
-      currentDate=`date +%F`
-      outputDir=tomopy.github.io/$currentDate/gpu
-
-      python -Om benchmarking.project \
-        --poisson 500 \
-        --trials 4 \
-        --width 1446 \
-        --num-angles 1500 \
-        --phantom peppers \
-        --output-dir $outputDir \
-
-      python -Om benchmarking.reconstruct \
-        --ncore 4 \
-        --max-iter 50 \
-        --phantom peppers \
-        --output-dir $outputDir \
-        --algorithm $(algorithmName)
-
-      python -Om benchmarking.summarize \
-        --phantom peppers \
-        --trials 4 \
-        --output-dir $outputDir \
-    displayName: 'Run benchmarks'
-
-  - script: |
-      cd tomopy.github.io
-      source activate tomopy-bench
-      TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-      BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
-      git checkout $BRANCH_NAME
-      git config --global user.name "Dreycen Foiles"
-      git config --global user.email "foilesdreycen@gmail.com"
-      git add *
-      git commit -m "Bi-monthly benchmark"
-      git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io $BRANCH_NAME
-    displayName: 'Update benchmarking data repository'
-
-  - script: |
-      conda env remove --yes -n tomopy-bench
-      rm -rf tomopy.github.io
-      rm -rf tomopy
-    displayName: Remove existing build environment
-  
-
+        cd tomopy.github.io
+        source activate tomopy-bench
+        BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
+        git checkout $BRANCH_NAME
+        git config --global user.name "Dreycen Foiles"
