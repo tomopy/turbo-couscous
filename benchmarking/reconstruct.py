@@ -50,7 +50,12 @@ logger = logging.getLogger(__name__)
     default=None,
     help='Python List of Python Dict of tomopy parameters as string',
 )
-def main(phantom, max_iter, output_dir, ncore, parameters):
+@click.option(
+    '--algorithm',
+    default=None,
+    help='Name of algorithm to use given as a string',
+)
+def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     """Reconstruct data using TomoPy.
 
     Automatically chooses which algorithms to run based the TomoPy
@@ -62,6 +67,32 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
     dynamic_range = np.max(data['original'])
     if parameters is not None:
         parameters = ast.literal_eval(parameters)
+
+    elif algorithm is not None:
+        default_parameters = {
+            'gridrec': [
+                {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
+                {'algorithm': 'gridrec', 'filter_name': 'cosine'},
+                {'algorithm': 'gridrec', 'filter_name': 'hamming'},
+                {'algorithm': 'gridrec', 'filter_name': 'hann'},
+                {'algorithm': 'gridrec', 'filter_name': 'parzen'},
+                {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
+                {'algorithm': 'gridrec', 'filter_name': 'shepp'},
+            ],
+            'sirt': [
+                {'algorithm': 'sirt'},
+                {'algorithm': 'sirt', 'accelerated': True,
+                 'device': 'cpu', 'interpolation': 'LINEAR'},
+                {'algorithm': 'sirt', 'accelerated': True,
+                 'device': 'cpu', 'interpolation': 'CUBIC'},
+            ]
+        }
+
+        if algorithm in default_parameters:
+            parameters = default_parameters[algorithm]
+        else:
+            parameters = [{'algorithm': algorithm}]
+
     else:
         parameters = [
             # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?
@@ -105,18 +136,18 @@ def main(phantom, max_iter, output_dir, ncore, parameters):
             #     True, 'device': 'cpu', 'interpolation': 'LINEAR'},
             # {'algorithm': 'mlem', 'accelerated':
             #     True, 'device': 'cpu', 'interpolation': 'CUBIC'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'NN'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'NN'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            # {'algorithm': 'sirt', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'sirt', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'CUBIC'},
         ]
         try:
             import astra
