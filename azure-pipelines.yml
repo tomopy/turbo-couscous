@@ -14,11 +14,81 @@ schedules:
 trigger:
 - master
 
-stages:
+jobs:
 
-- stage: Run_benchmarks
+  - job: Compute_projection
+    timeoutInMinutes: 0
 
-  jobs:
+    pool:
+      name: Default
+      demands: 
+        - CUDA_VERSION
+        - Agent.OS -equals Linux
+
+    steps: 
+
+      - bash: echo "##vso[task.prependpath]$CONDA/bin"
+        displayName: Add conda to PATH
+
+      - script: |  
+          conda env remove --yes -n tomopy
+          rm -rf tomopy.github.io
+          rm -rf tomopy
+        displayName: Remove existing build environment
+
+      - bash: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
+        displayName: 'Create benchmarking environment'
+
+      - script: |
+          source activate tomopy-bench
+          git clone --depth 1 https://github.com/tomopy/tomopy
+          cd tomopy
+          python setup.py install --enable-cuda --cuda-arch=30
+        displayName: Install TomoPy
+      
+      - script: |
+          source activate tomopy-bench
+          cd tomopy 
+          pip install pytest
+          pytest 
+        displayName: Test TomoPy
+
+      - bash: git clone --depth 1 https://github.com/tomopy/tomopy.github.io
+        displayName: Download benchmarking data repo
+
+      - script: |
+          source activate tomopy-bench
+          pip install click
+          TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
+          BRANCH_NAME=$TOMOPY_VERSION
+
+          cd tomopy.github.io
+          git checkout -B $BRANCH_NAME
+          cd ..
+
+          currentDate=`date +%F`
+          outputDir=tomopy.github.io/$currentDate/
+    
+          python -Om benchmarking.project \
+            --poisson 500 \
+            --trials 4 \
+            --width 400 \
+            --num-angles 50 \
+            --output-dir $outputDir 
+
+          cd tomopy.github.io
+          git config --global user.name "Dreycen Foiles"
+          git config --global user.email "foilesdreycen@gmail.com"
+          git add *
+          git commit -m "Bi-monthly benchmark"
+          git push https://$(PAT)@github.com/tomopy/tomopy.github.io 
+        displayName: Compute projections
+
+      - script: |  
+          conda env remove --yes -n tomopy
+          rm -rf tomopy.github.io
+          rm -rf tomopy
+        displayName: Remove existing build environment
 
   - job: CPU_Benchmarks
     timeoutInMinutes: 0
@@ -96,21 +166,16 @@ stages:
           --ncore 4 \
           --max-iter 50 \
           --output-dir $outputDir \
-          --algorithm $(algorithmName) \ 
-      displayName: 'Run benchmarks'
+          --algorithm $(algorithmName) 
 
-    - script: |
         cd tomopy.github.io
-        source activate tomopy-bench
-        TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-        BRANCH_NAME=$TOMOPY_VERSION
-        git checkout -b $BRANCH_NAME
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
+        git pull -f 
         git add *
         git commit -m "Bi-monthly benchmark"
-        git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io
-      displayName: Add reconstruction algorithm to repository
+        git push https://$(PAT)@github.com/tomopy/tomopy.github.io
+      displayName: Compute reconstruction
 
     - script: |
         conda env remove --yes -n tomopy-bench
@@ -143,6 +208,7 @@ stages:
     - script: |
         conda env remove --yes -n tomopy-bench
         rm -rf tomopy.github.io
+        rm -rf tomopy
       displayName: Remove existing build environment  
       
     - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml 
@@ -177,21 +243,16 @@ stages:
           --ncore 4 \
           --max-iter 50 \
           --output-dir $outputDir \
-          --algorithm $(algorithmName) \ 
-      displayName: 'Run benchmarks'
+          --algorithm $(algorithmName)  
 
-    - script: |
         cd tomopy.github.io
-        source activate tomopy-bench
-        TOMOPY_VERSION=`python -c 'import tomopy; print(tomopy.__version__)'`
-        BRANCH_NAME=$TOMOPY_VERSION
-        git checkout -b $BRANCH_NAME
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
+        git pull -f 
         git add *
         git commit -m "Bi-monthly benchmark"
-        git push -uf https://$(PAT)@github.com/tomopy/tomopy.github.io
-      displayName: Add reconstruction algorithm to repository
+        git push https://$(PAT)@github.com/tomopy/tomopy.github.io
+      displayName: Compute reconstruction
 
     - script: |
         conda env remove --yes -n tomopy-bench
@@ -199,14 +260,18 @@ stages:
         rm -rf tomopy
       displayName: Remove existing build environment
   
-- stage: Summarize_results
+  - job: Summarize_results
+      
+    pool:
+      name: Default
+      demands: 
+        - Agent.OS -equals Linux
 
-  pool:
-    name: Default
-    demands: 
-      - Agent.OS -equals Linux
+    dependsOn:
+      - CPU_Benchmarks
+      - GPU_Benchmarks
 
-  steps:
+    steps:
 
   - download: current
     artifact: gridrec
@@ -234,3 +299,15 @@ stages:
         BRANCH_NAME="$TOMOPY_VERSION-"$(algorithmName)
         git checkout $BRANCH_NAME
         git config --global user.name "Dreycen Foiles"
+        git config --global user.email "foilesdreycen@gmail.com"
+        git add *
+        git commit -m "Bi-monthly benchmark"
+        git push https://$(PAT)@github.com/tomopy/tomopy.github.io 
+      displayName: Summarize data
+
+    - script: |
+        conda env remove --yes -n tomopy-bench
+        rm -rf tomopy.github.io
+        rm -rf tomopy
+      displayName: Remove existing build environment
+
