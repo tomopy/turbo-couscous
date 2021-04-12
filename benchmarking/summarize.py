@@ -9,12 +9,14 @@ import json
 import logging
 import os
 import re
-from collections import defaultdict
 
 import click
 import matplotlib.pyplot as plt
 import numpy as np
 import tomopy
+import xdesign as xd
+
+from .linestyles import linestyles
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,14 @@ logger = logging.getLogger(__name__)
     type=str,
 )
 @click.option('-v', '--verbose', is_flag=True)
-def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=False):
+def summarize(
+    phantom,
+    output_dir,
+    trials,
+    title,
+    summary_file=None,
+    verbose=False,
+):
     """Scrape reconstructions data and summarize it in a JSON.
 
     If the JSON exists already, it will be updated instead of replaced.
@@ -55,6 +64,7 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
     if verbose:
         logger.setLevel(level=logging.DEBUG)
     base_path = os.path.join(output_dir, phantom)
+
     # Load data from file or make empty dictionary
     if summary_file is None:
         summary_file = os.path.join(base_path, 'summary.json')
@@ -65,14 +75,15 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
     else:
         all_results = dict()
     logger.info("Summary is located at {}".format(summary_file))
+
+    # Load the original for comparison
+    original = np.load(os.path.join(output_dir, phantom,
+                                    'simulated_data.npz'))['original']
+
     # Search the phantom folder for results and summarize them
     for folder in glob.glob(os.path.join(base_path, "*")):
         if os.path.isdir(folder):
-            # Now using python wall times instead of pyctest times
-            # all_results.update(
-            #     scrape_algorithm_times(
-            #         os.path.join(folder, 'run_tomopy.json')))
-            algo_results = scrape_image_quality(folder)
+            algo_results = scrape_image_quality(folder, original)
             algo = os.path.basename(folder)
             if algo in all_results:
                 all_results[algo].update(algo_results)
@@ -80,67 +91,18 @@ def summarize(phantom, output_dir, trials, title, summary_file=None, verbose=Fal
                 all_results[algo] = algo_results
             concat_recons(folder, base_path)
             logger.info("Found results for {}".format(algo))
+
     # Save the results as a JSON
     with open(summary_file, 'w') as f:
         json.dump(all_results, f, indent=4, sort_keys=True)
     image_quality_vs_time_plot(summary_plot, all_results, trials, title)
 
 
-cm = plt.cm.plasma
-linestyles = defaultdict(
-    lambda: {'linestyle': '-', 'marker': '', 'color': cm(0)},
-    {
-        # direct methods
-        'gridrec': {'linestyle': '', 'marker': 'o', 'color': cm(0.0)},
-        'fbp': {'linestyle': '', 'marker': 'X', 'color': cm(0.1)},
-        'astra-fbp_cuda': {'linestyle': '', 'marker': 'X', 'color': cm(0.1),
-                           'fillstyle': 'none', },
-        # iterative methods
-        'art': {'linestyle': '-', 'marker': '^', 'color': cm(0.4)},
-        'bart': {'linestyle': '-', 'marker': '>', 'color': cm(0.45)},
-        'astra-sart_cuda': {'linestyle': '-', 'marker': '>', 'color': cm(0.45),
-                            'fillstyle': 'none', },
-        'sirt': {'linestyle': '-', 'marker': '<', 'color': cm(0.5)},
-        'sirt_cuda': {'linestyle': '-', 'marker': '<', 'color': cm(0.5),
-                      'fillstyle': 'none', },
-        'astra-sirt_cuda': {'linestyle': '--', 'marker': '<', 'color': cm(0.5),
-                            'fillstyle': 'none', },
-
-        'osem': {'linestyle': '-', 'marker': 's', 'color': cm(0.65)},
-        'ospml_hybrid': {'linestyle': ':', 'marker': 's', 'color': cm(0.7)},
-        'ospml_quad': {'linestyle': '--', 'marker': 's', 'color': cm(0.75)},
-        'mlem': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0)},
-        'lprec-em': {'linestyle': '-', 'marker': 'o', 'color': cm(1.0),
-                     'fillstyle': 'none', },
-        'astra-em_cuda': {'linestyle': '--', 'marker': 'o', 'color': cm(1.0),
-                          'fillstyle': 'none', },
-        'pml_hybrid': {'linestyle': ':', 'marker': 'o', 'color': cm(0.95)},
-        'pml_quad': {'linestyle': '--', 'marker': 'o', 'color': cm(0.9)},
-        # gradient methods
-        'grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6)},
-        'lprec-grad': {'linestyle': '-', 'marker': 's', 'color': cm(0.6),
-                       'fillstyle': 'none', },
-        'lprec-cg': {'linestyle': '--', 'marker': 's', 'color': cm(0.6),
-                     'fillstyle': 'none', },
-        'astra-cgls_cuda': {'linestyle': ':', 'marker': 's', 'color': cm(0.6),
-                            'fillstyle': 'none', },
-
-        'tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8)},
-        'lprec-tv': {'linestyle': '-', 'marker': 'd', 'color': cm(0.8),
-                     'fillstyle': 'none', },
-        'lprec-tve': {'linestyle': '--', 'marker': 'd', 'color': cm(0.8),
-                      'fillstyle': 'none', },
-        'lprec-tvl1': {'linestyle': ':', 'marker': 'd', 'color': cm(0.8),
-                       'fillstyle': 'none', },
-    },
-)
-
-
 def image_quality_vs_time_plot(
-        plot_name,
-        results,
-        trials=1,
-        title=None,
+    plot_name,
+    results,
+    trials=1,
+    title=None,
 ):
     """Create a lineplot with errorbars of image quality vs time.
 
@@ -202,14 +164,18 @@ def image_quality_vs_time_plot(
     plt.xlim([0.1, 3600])
     plt.semilogx(basex=2)
     plt.xticks(
-        # 3*3600, 6*3600, 12*3600, 24*3600],
-        [0.1, 1, 5, 10, 30, 60, 5*60, 10*60, 30*60, 3600],
-        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m',
-            '30m', '1h']  # , '3h',  # '6h', '12h', '24h'],
+        [0.1, 1, 5, 10, 30, 60, 5 * 60, 10 * 60, 30 * 60, 3600],
+        ['0.1s', '1s', '5s', '10s', '30s', '1m', '5m', '10m', '30m', '1h'],
     )
 
-    plt.legend(results.keys(), ncol=1, handlelength=3,
-               bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend(
+        results.keys(),
+        ncol=1,
+        handlelength=3,
+        bbox_to_anchor=(1.05, 1),
+        loc=2,
+        borderaxespad=0.,
+    )
     plt.xlabel(xlabel)
     plt.ylabel('MS-SSIM Index')
     if title is None:
@@ -229,21 +195,27 @@ def concat_recons(algo_folder, base_path):
     # split into chunks of five images
     for i in range(0, np.ceil(len(recons) / 5).astype(int)):
         combined = np.concatenate(
-            recons[5*i:min(len(recons), 5*(i+1))], axis=1)
+            recons[5 * i:min(len(recons), 5 * (i + 1))],
+            axis=1,
+        )
         plt.imsave(algo_folder + '-{}.png'.format(i), combined)
 
 
-def scrape_image_quality(algo_folder):
+def scrape_image_quality(algo_folder, original):
     """Scrape the quality std error and iteration numbers from the files.
 
-    {algo_folder} is a folder containing files {algo}.{num_iter}.npz with
-    keyword "mssim" pointing to an array of quality values.
+    {algo_folder} is a folder containing files {algo}.{num_iter}.npz which
+    contain key 'recon' which is the recosntructed images for comparison and
+    key 'total_time' which is the total reconstruction time for the image in
+    the file.
 
-    Return a dictionary for the folder containing three lists for the
-    concatenated image quality at each iteration, std error at each iteration,
-    and the number of each iteration. The length of the lists is the number of
-    files in {algo_folder}.
+    Return a dictionary for the folder containing lists for the concatenated
+    image quality at each iteration, std error at each iteration, the number of
+    each iteration, and the total wall time for each iteration. The length of
+    the lists is the number of files in {algo_folder}.
     """
+    dynamic_range = np.max(original)
+
     quality = list()
     error = list()
     num_iter = list()
@@ -263,8 +235,21 @@ def scrape_image_quality(algo_folder):
             # get the iteration number from the filename sans extension
             i = keywords[-2]
             i = int(i)
+
         try:
-            msssim = np.load(file[:-3] + "msssim.npy")
+            # compute quality metrics
+            recon = data['recon']
+            pad = (recon.shape[-1] - original.shape[-1]) // 2
+            msssim = np.empty(len(recon))
+            for z in range(len(recon)):
+                # compute the reconstructed image quality metrics
+                scales, msssim[z], quality_maps = xd.msssim(
+                    original[z],
+                    recon[z, pad:recon.shape[1] - pad,
+                          pad:recon.shape[2] - pad],
+                    L=dynamic_range,
+                    sigma=11,
+                )
             if np.any(np.isnan(msssim)):
                 logger.error("Quality rating contains NaN!")
             quality.append(np.nanmean(msssim))
@@ -275,8 +260,8 @@ def scrape_image_quality(algo_folder):
             logger.warning("MSSSIM data missing from {}".format(file))
             pass  # The data was missing from the file
 
-    num_iter, quality, error, wall_time = zip(*sorted(zip(
-        num_iter, quality, error, wall_time)))
+    num_iter, quality, error, wall_time = zip(
+        *sorted(zip(num_iter, quality, error, wall_time)))
 
     logger.debug("num_iter: {}".format(num_iter))
     logger.debug("quality: {}".format(quality))

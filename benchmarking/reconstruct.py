@@ -240,7 +240,7 @@ def reconstruct(
         max_iter,
         phantom,
         output_dir,
-        term_crit=-0.05,
+        max_time=3600,
 ):
     """Reconstruct data using given params.
 
@@ -263,6 +263,8 @@ def reconstruct(
         is used to scale a png image of the reconstruction
     max_iter : int
         The maximum number iterations if the algorithm is iterative
+    max_time : float
+        The maximum wall time per slice before stopping (seconds).
     phantom : string
         The name of the phantom
     """
@@ -291,7 +293,7 @@ def reconstruct(
     if 'gridrec' in algorithm or 'fbp' in algorithm:
         iters, steps = [1], [1]
     else:
-        iters = np.unique(np.logspace(0, np.log10(max_iter)).astype(int))
+        iters = np.unique(np.logspace(0, np.log10(max_iter), num=16, dtype=int))
         steps = [iters[0]] + np.diff(iters).tolist()
         np.testing.assert_array_equal(np.cumsum(steps), iters)
 
@@ -371,7 +373,7 @@ def reconstruct(
                 return
             os.makedirs(base_path, exist_ok=True)
             # save all information
-            np.savez(
+            np.savez_compressed(
                 filename + '.npz',
                 recon=recon,
                 time=wall_time,
@@ -385,37 +387,13 @@ def reconstruct(
                 vmin=0,
                 vmax=1.1 * dynamic_range,
             )
-        # compute quality metrics
-        msssim = np.empty(len(recon))
-        for z in range(len(recon)):
-            # compute the reconstructed image quality metrics
-            scales, msssim[z], quality_maps = xd.msssim(
-                data['original'][z],
-                recon[z, pad:recon.shape[1] - pad, pad:recon.shape[2] -
-                      pad],
-                L=dynamic_range,
-                sigma=11,
-            )
-        np.save(
-            filename + '.msssim',
-            msssim,
-        )
-        if np.any(np.isnan(msssim)):
-            logger.error("Quality rating contains NaN!")
         logger.info(
-            "{} : ms-ssim = {:05.3f} : "
-            "time = {:05.3f}s, total time = {:05.3f}s".format(
-                filename, np.nanmean(msssim), wall_time, total_time)
+            "{} : time = {:05.3f}s, total time = {:05.3f}s".format(
+                filename, wall_time, total_time)
         )
-        # if i > 1 and np.nanmean(msssim) - peak_quality < term_crit:
-        #     logger.info(
-        #         "Early termination at {} iterations : "
-        #         "{:05.3f} < {:05.3f}".format(
-        #             i, np.nanmean(msssim) - peak_quality, term_crit)
-        #         )
-        #     break
-        peak_quality = max(np.nanmean(msssim), peak_quality)
-
+        if total_time > max_time * recon.shape[0]:
+            logger.info(f"Terminate early due to {max_time}s time limit.")
+            break
 
 if __name__ == '__main__':
     main()
