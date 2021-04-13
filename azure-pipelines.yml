@@ -303,6 +303,9 @@ jobs:
         git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
 
+        currentDate=`date +%F`
+        outputDir=tomopy.github.io/$currentDate/
+
         python -Om benchmarking.summarize \
               --phantom peppers \
               --trials 4 \
