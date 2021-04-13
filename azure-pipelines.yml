@@ -27,34 +27,34 @@ jobs:
 
     steps:
 
-      # - bash: echo "##vso[task.prependpath]$CONDA/bin"
-      #   displayName: Add conda to PATH
+      - bash: echo "##vso[task.prependpath]$CONDA/bin"
+        displayName: Add conda to PATH
 
-      # - script: |
-      #     conda env remove --yes -n tomopy-bench
-      #     rm -rf tomopy.github.io
-      #     rm -rf tomopy
-      #   displayName: Remove existing build environment
+      - script: |
+          conda env remove --yes -n tomopy-bench
+          rm -rf tomopy.github.io
+          rm -rf tomopy
+        displayName: Remove existing build environment
 
-      # - bash: conda env create --force -n tomopy-bench -f tomopy-bench.yaml
-      #   displayName: 'Create benchmarking environment'
+      - bash: conda env create --force -n tomopy-bench -f tomopy-bench.yaml
+        displayName: 'Create benchmarking environment'
 
-      # - script: |
-      #     source activate tomopy-bench
-      #     git clone --depth 10 https://github.com/tomopy/tomopy
-      #     cd tomopy
-      #     python setup.py install --enable-cuda --cuda-arch=30
-      #   displayName: Install TomoPy
+      - script: |
+          source activate tomopy-bench
+          git clone --depth 10 https://github.com/tomopy/tomopy
+          cd tomopy
+          python setup.py install --enable-cuda --cuda-arch=30
+        displayName: Install TomoPy
 
-      # - script: |
-      #     source activate tomopy-bench
-      #     cd tomopy
-      #     pip install pytest
-      #     pytest
-      #   displayName: Test TomoPy
+      - script: |
+          source activate tomopy-bench
+          cd tomopy
+          pip install pytest
+          pytest
+        displayName: Test TomoPy
 
-      # - bash: git clone --depth 10 https://github.com/tomopy/tomopy.github.io --no-single-branch
-      #   displayName: Download benchmarking data repo
+      - bash: git clone --depth 10 https://github.com/tomopy/tomopy.github.io --no-single-branch
+        displayName: Download benchmarking data repo
 
       - script: |
           source activate tomopy-bench
@@ -64,6 +64,7 @@ jobs:
           cd tomopy.github.io
           git checkout -B $BRANCH_NAME
           git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
+          git pull --no-rebase --allow-unrelated-histories -X theirs
           cd ..
 
           currentDate=`date +%F`
@@ -81,7 +82,7 @@ jobs:
           git config --global user.email "foilesdreycen@gmail.com"
           git add *
           git commit -m "Bi-monthly benchmark"
-          git pull --rebase --allow-unrelated-histories
+          git pull --no-rebase --allow-unrelated-histories -X ours
           git push https://$(PAT)@github.com/tomopy/tomopy.github.io
         displayName: Compute projections
 
@@ -159,6 +160,7 @@ jobs:
         cd tomopy.github.io
         git checkout -B $BRANCH_NAME
         git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
+        git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
 
         currentDate=`date +%F`
@@ -175,7 +177,7 @@ jobs:
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
         git commit -m "Bi-monthly benchmark"
-        git pull --allow-unrelated-histories
+        git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Compute reconstruction
 
@@ -237,6 +239,7 @@ jobs:
         cd tomopy.github.io
         git checkout -B $BRANCH_NAME
         git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
+        git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
 
         currentDate=`date +%F`
@@ -253,7 +256,7 @@ jobs:
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
         git commit -m "Bi-monthly benchmark"
-        git pull --allow-unrelated-histories
+        git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Compute reconstruction
 
@@ -276,9 +279,6 @@ jobs:
 
     steps:
 
-  - download: current
-    artifact: gridrec
-
     - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml
       displayName: 'Create benchmarking environment'
 
@@ -286,10 +286,10 @@ jobs:
       displayName: Download repository
 
     - script: |
-          source activate tomopy-bench
-          git clone --depth 10 https://github.com/tomopy/tomopy
-          cd tomopy
-          python setup.py install
+        source activate tomopy-bench
+        git clone --depth 10 https://github.com/tomopy/tomopy
+        cd tomopy
+        python setup.py install
       displayName: Install TomoPy
 
     - script: |
@@ -300,9 +300,8 @@ jobs:
         cd tomopy.github.io
         git checkout -B $BRANCH_NAME
         git branch --set-upstream-to=origin/$BRANCH_NAME $BRANCH_NAME
+        git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
-
-    displayName: Compile data
 
         python -Om benchmarking.summarize \
               --phantom peppers \
@@ -314,7 +313,7 @@ jobs:
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
         git commit -m "Bi-monthly benchmark"
-        git pull --allow-unrelated-histories
+        git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Summarize data
 
