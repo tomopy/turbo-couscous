@@ -81,7 +81,7 @@ jobs:
           git config --global user.name "Dreycen Foiles"
           git config --global user.email "foilesdreycen@gmail.com"
           git add *
-          git commit -m "Bi-monthly benchmark"
+          git commit -m "Simulate data for benchmark"
           git pull --no-rebase --allow-unrelated-histories -X ours
           git push https://$(PAT)@github.com/tomopy/tomopy.github.io
         displayName: Compute projections
@@ -176,7 +176,7 @@ jobs:
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
-        git commit -m "Bi-monthly benchmark"
+        git commit -m "Bi-monthly benchmark $(algorithmName)"
         git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Compute reconstruction
@@ -255,7 +255,7 @@ jobs:
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
-        git commit -m "Bi-monthly benchmark"
+        git commit -m "Bi-monthly benchmark $(algorithmName)"
         git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Compute reconstruction
@@ -315,7 +315,7 @@ jobs:
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
-        git commit -m "Bi-monthly benchmark"
+        git commit -m "Benchmark data summary"
         git pull --no-rebase --allow-unrelated-histories -X ours
         git push https://$(PAT)@github.com/tomopy/tomopy.github.io
       displayName: Summarize data
