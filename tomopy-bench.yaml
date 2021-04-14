@@ -21,6 +21,7 @@ dependencies:
   - numpy ["blas=*=openblas"]
   - opencv>=3.4 ["blas=*=openblas"]
   - pyctest>0.0.10
+  - pytest
   - python=3.6
   - pywavelets
   - scikit-build

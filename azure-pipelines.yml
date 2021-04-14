@@ -49,7 +49,6 @@ jobs:
       - script: |
           source activate tomopy-bench
           cd tomopy
-          conda install pytest
           pytest
         displayName: Test TomoPy
 
