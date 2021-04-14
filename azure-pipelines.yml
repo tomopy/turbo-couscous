@@ -49,7 +49,7 @@ jobs:
       - script: |
           source activate tomopy-bench
           cd tomopy
-          pip install pytest
+          conda install pytest
           pytest
         displayName: Test TomoPy
 
