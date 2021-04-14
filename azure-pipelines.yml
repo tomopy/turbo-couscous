@@ -311,6 +311,7 @@ jobs:
               --output-dir $outputDir
 
         cd tomopy.github.io
+        find . -name "*.npz" -delete
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
