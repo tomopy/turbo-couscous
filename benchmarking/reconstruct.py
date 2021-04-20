@@ -63,6 +63,8 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     Alternatively, a string representing a python list of dictionaries
     of parameters can be provided to run a custom subset of tests.
     """
+    logging.basicConfig(level=logging.INFO)
+    
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
     if parameters is not None:
