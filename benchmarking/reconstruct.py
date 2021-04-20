@@ -91,10 +91,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             'sirt_gpu': [
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'NN'},
-                {'algorithm': 'sirt', 'accelerated':
-                    True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                {'algorithm': 'sirt', 'accelerated':
-                    True, 'device': 'gpu', 'interpolation': 'CUBIC'}
+                # {'algorithm': 'sirt', 'accelerated':
+                #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+                # {'algorithm': 'sirt', 'accelerated':
+                #     True, 'device': 'gpu', 'interpolation': 'CUBIC'}
             ]
         }
 
