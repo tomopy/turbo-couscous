@@ -63,6 +63,8 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
     Alternatively, a string representing a python list of dictionaries
     of parameters can be provided to run a custom subset of tests.
     """
+    logging.basicConfig(level=logging.INFO)
+
     data = np.load(os.path.join(output_dir, phantom, 'simulated_data.npz'))
     dynamic_range = np.max(data['original'])
     if parameters is not None:
@@ -89,10 +91,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             'sirt_gpu': [
                 {'algorithm': 'sirt', 'accelerated':
                  True, 'device': 'gpu', 'interpolation': 'NN'},
-                {'algorithm': 'sirt', 'accelerated':
-                    True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                {'algorithm': 'sirt', 'accelerated':
-                    True, 'device': 'gpu', 'interpolation': 'CUBIC'}
+                # {'algorithm': 'sirt', 'accelerated':
+                #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+                # {'algorithm': 'sirt', 'accelerated':
+                #     True, 'device': 'gpu', 'interpolation': 'CUBIC'}
             ]
         }
 
@@ -301,7 +303,8 @@ def reconstruct(
     if 'gridrec' in algorithm or 'fbp' in algorithm:
         iters, steps = [1], [1]
     else:
-        iters = np.unique(np.logspace(0, np.log10(max_iter), num=16, dtype=int))
+        iters = np.unique(np.logspace(
+            0, np.log10(max_iter), num=16, dtype=int))
         steps = [iters[0]] + np.diff(iters).tolist()
         np.testing.assert_array_equal(np.cumsum(steps), iters)
 
@@ -402,6 +405,7 @@ def reconstruct(
         if total_time > max_time * recon.shape[0]:
             logger.info(f"Terminate early due to {max_time}s time limit.")
             break
+
 
 if __name__ == '__main__':
     main()

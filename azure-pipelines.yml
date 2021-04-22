@@ -71,9 +71,9 @@ jobs:
 
           python -Om benchmarking.project \
             --poisson 500 \
-            --trials 4 \
-            --width 400 \
-            --num-angles 50 \
+            --trials 1 \
+            --width 360 \
+            --num-angles 512 \
             --output-dir $outputDir
 
           cd tomopy.github.io
@@ -166,8 +166,8 @@ jobs:
         outputDir=tomopy.github.io/$currentDate/
 
         python -Om benchmarking.reconstruct \
-          --ncore 4 \
-          --max-iter 50 \
+          --ncore 1 \
+          --max-iter 500 \
           --output-dir $outputDir \
           --algorithm $(algorithmName)
 
@@ -245,8 +245,8 @@ jobs:
         outputDir=tomopy.github.io/$currentDate/
 
         python -Om benchmarking.reconstruct \
-          --ncore 4 \
-          --max-iter 50 \
+          --ncore 1 \
+          --max-iter 500 \
           --output-dir $outputDir \
           --algorithm $(algorithmName)
 
