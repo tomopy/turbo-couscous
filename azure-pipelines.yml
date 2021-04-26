@@ -172,6 +172,7 @@ jobs:
           --algorithm $(algorithmName)
 
         cd tomopy.github.io
+        git pull --no-rebase --allow-unrelated-histories -X theirs
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
@@ -251,6 +252,7 @@ jobs:
           --algorithm $(algorithmName)
 
         cd tomopy.github.io
+        git pull --no-rebase --allow-unrelated-histories -X theirs
         git config --global user.name "Dreycen Foiles"
         git config --global user.email "foilesdreycen@gmail.com"
         git add *
