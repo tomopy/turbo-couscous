@@ -66,8 +66,7 @@ jobs:
           git pull --no-rebase --allow-unrelated-histories -X theirs
           cd ..
 
-          currentDate=`date +%F`
-          outputDir=tomopy.github.io/$currentDate/
+          outputDir=tomopy.github.io/
 
           python -Om benchmarking.project \
             --poisson 500 \
@@ -77,8 +76,8 @@ jobs:
             --output-dir $outputDir
 
           cd tomopy.github.io
-          git config --global user.name "Dreycen Foiles"
-          git config --global user.email "foilesdreycen@gmail.com"
+          git config --global user.name "Automated TomoPy Benchmarks"
+          git config --global user.email "<>"
           git add *
           git commit -m "Simulate data for benchmark"
           git pull --no-rebase --allow-unrelated-histories -X ours
@@ -162,8 +161,7 @@ jobs:
         git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
 
-        currentDate=`date +%F`
-        outputDir=tomopy.github.io/$currentDate/
+        outputDir=tomopy.github.io/
 
         python -Om benchmarking.reconstruct \
           --ncore 1 \
@@ -173,8 +171,8 @@ jobs:
 
         cd tomopy.github.io
         git pull --no-rebase --allow-unrelated-histories -X theirs
-        git config --global user.name "Dreycen Foiles"
-        git config --global user.email "foilesdreycen@gmail.com"
+        git config --global user.name "Automated TomoPy Benchmarks"
+        git config --global user.email "<>"
         git add *
         git commit -m "Bi-monthly benchmark $(algorithmName)"
         git pull --no-rebase --allow-unrelated-histories -X ours
@@ -243,7 +241,7 @@ jobs:
         cd ..
 
         currentDate=`date +%F`
-        outputDir=tomopy.github.io/$currentDate/
+        outputDir=tomopy.github.io/
 
         python -Om benchmarking.reconstruct \
           --ncore 1 \
@@ -253,8 +251,8 @@ jobs:
 
         cd tomopy.github.io
         git pull --no-rebase --allow-unrelated-histories -X theirs
-        git config --global user.name "Dreycen Foiles"
-        git config --global user.email "foilesdreycen@gmail.com"
+        git config --global user.name "Automated TomoPy Benchmarks"
+        git config --global user.email "<>""
         git add *
         git commit -m "Bi-monthly benchmark $(algorithmName)"
         git pull --no-rebase --allow-unrelated-histories -X ours
@@ -305,7 +303,7 @@ jobs:
         cd ..
 
         currentDate=`date +%F`
-        outputDir=tomopy.github.io/$currentDate/
+        outputDir=tomopy.github.io/
 
         python -Om benchmarking.summarize \
               --phantom peppers \
@@ -314,8 +312,8 @@ jobs:
 
         cd tomopy.github.io
         find . -name "*.npz" -delete
-        git config --global user.name "Dreycen Foiles"
-        git config --global user.email "foilesdreycen@gmail.com"
+        git config --global user.name "Automated TomoPy Benchmarks"
+        git config --global user.email "<>"
         git add *
         git commit -m "Benchmark data summary"
         git pull --no-rebase --allow-unrelated-histories -X ours
