@@ -161,7 +161,7 @@ def image_quality_vs_time_plot(
             )
 
     plt.ylim([0, 1])
-    plt.xlim([0.1, 3600])
+    plt.xlim([0.1, 1800])
     plt.semilogx(basex=2)
     plt.xticks(
         [0.1, 1, 5, 10, 30, 60, 5 * 60, 10 * 60, 30 * 60],
