@@ -306,7 +306,7 @@ jobs:
 
         python -Om benchmarking.summarize \
               --phantom peppers \
-              --trials 4 \
+              --trials 1 \
               --output-dir $outputDir
 
         cd tomopy.github.io
