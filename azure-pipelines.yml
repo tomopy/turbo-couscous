@@ -240,7 +240,6 @@ jobs:
         git pull --no-rebase --allow-unrelated-histories -X theirs
         cd ..
 
-        currentDate=`date +%F`
         outputDir=tomopy.github.io/
 
         python -Om benchmarking.reconstruct \
@@ -252,7 +251,7 @@ jobs:
         cd tomopy.github.io
         git pull --no-rebase --allow-unrelated-histories -X theirs
         git config --global user.name "Automated TomoPy Benchmarks"
-        git config --global user.email "<>""
+        git config --global user.email "<>"
         git add *
         git commit -m "Bi-monthly benchmark $(algorithmName)"
         git pull --no-rebase --allow-unrelated-histories -X ours
