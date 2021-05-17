@@ -81,21 +81,14 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
                 {'algorithm': 'gridrec', 'filter_name': 'shepp'},
             ],
-            'sirt': [
-                {'algorithm': 'sirt'},
-#                 {'algorithm': 'sirt', 'accelerated': True,
-#                  'device': 'cpu', 'interpolation': 'LINEAR'},
-#                 {'algorithm': 'sirt', 'accelerated': True,
-#                  'device': 'cpu', 'interpolation': 'CUBIC'},
-            ],
-            'sirt_gpu': [
+            'sirt_cuda': [
                 {'algorithm': 'sirt', 'accelerated':
-                 True, 'device': 'gpu', 'interpolation': 'NN'},
-                # {'algorithm': 'sirt', 'accelerated':
-                #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-                # {'algorithm': 'sirt', 'accelerated':
-                #     True, 'device': 'gpu', 'interpolation': 'CUBIC'}
-            ]
+                 True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            ],
+            'mlem_cuda': [
+                {'algorithm': 'mlem', 'accelerated':
+                    True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            ],
         }
 
         if algorithm in default_parameters:
@@ -105,7 +98,8 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
 
     else:
         parameters = [
-            # {'algorithm': 'gridrec', 'filter_name': 'none'},  # none isn't none, it's ramlak?
+            # none isn't none, it's ramlak?
+            # {'algorithm': 'gridrec', 'filter_name': 'none'},
             {'algorithm': 'gridrec', 'filter_name': 'butterworth'},
             {'algorithm': 'gridrec', 'filter_name': 'cosine'},
             {'algorithm': 'gridrec', 'filter_name': 'hamming'},
@@ -113,10 +107,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             {'algorithm': 'gridrec', 'filter_name': 'parzen'},
             {'algorithm': 'gridrec', 'filter_name': 'ramlak'},
             {'algorithm': 'gridrec', 'filter_name': 'shepp'},
+            # fbp is currenlty broken, it doesn't take filters into
+            # consideration
             # {'algorithm': 'fbp', 'filter_name': 'butterworth'},
             # {'algorithm': 'fbp', 'filter_name': 'cosine'},
-            # fbp is currenlty broken, it doesn't
-            # take filters into consideration
             # {'algorithm': 'fbp', 'filter_name': 'hamming'},
             # {'algorithm': 'fbp', 'filter_name': 'hann'},
             # {'algorithm': 'fbp', 'filter_name': 'parzen'},
@@ -131,21 +125,21 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             {'algorithm': 'pml_hybrid'},
             {'algorithm': 'pml_quad'},
             {'algorithm': 'sirt'},
-            # {'algorithm': 'tikh'},
+            {'algorithm': 'tikh'},
             {'algorithm': 'tv'},
-            # {'algorithm': 'grad'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'NN'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'gpu', 'interpolation': 'CUBIC'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'NN'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'LINEAR'},
-            # {'algorithm': 'mlem', 'accelerated':
-            #     True, 'device': 'cpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'grad'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'gpu', 'interpolation': 'CUBIC'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'NN'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'LINEAR'},
+            {'algorithm': 'mlem', 'accelerated':
+                True, 'device': 'cpu', 'interpolation': 'CUBIC'},
             {'algorithm': 'sirt', 'accelerated':
                 True, 'device': 'gpu', 'interpolation': 'NN'},
             {'algorithm': 'sirt', 'accelerated':
@@ -210,11 +204,10 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 # {'algorithm': tomopy.lprec, 'lpmethod': 'fbp', 'filter_name': 'hann'},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'cg', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'em', 'num_iter': num_iter},
-                {'algorithm': tomopy.lprec, 'lpmethod': 'grad',
-                    'num_iter': num_iter},  # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'grad', 'num_iter': num_iter},
                 {'algorithm': tomopy.lprec, 'lpmethod': 'tv', 'num_iter': num_iter},
-                # {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},  # broken
-                # {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},  # broken
+                {'algorithm': tomopy.lprec, 'lpmethod': 'tve', 'num_iter': num_iter},
+                {'algorithm': tomopy.lprec, 'lpmethod': 'tvl1', 'num_iter': num_iter},
             ]
         except ImportError:
             tomopy.lprec = None
