@@ -89,6 +89,16 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
                 {'algorithm': 'mlem', 'accelerated':
                     True, 'device': 'gpu', 'interpolation': 'LINEAR'},
             ],
+            'astra': [
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'SIRT_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'CGLS_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'EM_CUDA'}},
+                {'algorithm': tomopy.astra, 'options':
+                    {'proj_type': 'cuda', 'method': 'SART_CUDA'}},
+            ]
         }
 
         if algorithm in default_parameters:
