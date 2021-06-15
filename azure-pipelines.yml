@@ -107,6 +107,8 @@ jobs:
           algorithmName: 'art'
         BART:
           algorithmName: 'bart'
+        GRAD:
+          algorithmName: 'grad'
         MLEM:
           algorithmName: 'mlem'
         OSEM:
@@ -121,6 +123,8 @@ jobs:
           algorithmName: 'pml_quad'
         SIRT:
           algorithmName: 'sirt'
+        TIKH:
+          algorithmName: 'tikh'
         TV:
           algorithmName: 'tv'
 
@@ -197,10 +201,12 @@ jobs:
 
     strategy:
       matrix:
-        SIRT_GPU:
-          algorithmName: 'sirt_gpu'
-        # MLEM_GPU:
-        #   algorithmName: 'mlem_gpu'
+        SIRT_CUDA:
+          algorithmName: 'sirt_cuda'
+        MLEM_CUDA:
+          algorithmName: 'mlem_cuda'
+        ASTRA:
+          algorithmName: 'astra'
 
     steps:
 
@@ -215,6 +221,9 @@ jobs:
 
     - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml
       displayName: 'Create benchmarking environment'
+
+    - script: conda install --yes -n tomopy-bench -c astra-toolbox/label/dev astra-toolbox=1.9 cudatoolkit=10
+      displayName: 'Install the astra-toolbox'
 
     - script: conda list -n tomopy-bench
       displayName: 'List conda environment'
