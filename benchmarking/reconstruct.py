@@ -16,6 +16,7 @@ import tomopy
 import xdesign as xd
 
 logger = logging.getLogger(__name__)
+randomizer = np.random.default_rng()
 
 
 @click.command()
@@ -127,11 +128,11 @@ def main(phantom, max_iter, output_dir, ncore, parameters, algorithm):
             # {'algorithm': 'fbp', 'filter_name': 'ramlak'},
             # {'algorithm': 'fbp', 'filter_name': 'shepp'},
             {'algorithm': 'art'},
-            {'algorithm': 'bart'},
+            {'algorithm': 'bart', 'num_block': 3, 'ind_block': randomizer.permutation(len(data['angles']))},
             {'algorithm': 'mlem'},
-            {'algorithm': 'osem'},
-            {'algorithm': 'ospml_hybrid'},
-            {'algorithm': 'ospml_quad'},
+            {'algorithm': 'osem', 'num_block': 3, 'ind_block': randomizer.permutation(len(data['angles']))},
+            {'algorithm': 'ospml_hybrid', 'num_block': 3, 'ind_block': randomizer.permutation(len(data['angles']))},
+            {'algorithm': 'ospml_quad', 'num_block': 3, 'ind_block': randomizer.permutation(len(data['angles']))},
             {'algorithm': 'pml_hybrid'},
             {'algorithm': 'pml_quad'},
             {'algorithm': 'sirt'},
