@@ -222,7 +222,7 @@ jobs:
     - script: conda env create --force -n tomopy-bench -f tomopy-bench.yaml
       displayName: 'Create benchmarking environment'
 
-    - script: conda install --yes -n tomopy-bench -c astra-toolbox/label/dev astra-toolbox=1.9 cudatoolkit=10
+    - script: conda install --yes -n tomopy-bench -c astra-toolbox astra-toolbox=2 cudatoolkit=$CUDA_VERSION
       displayName: 'Install the astra-toolbox'
 
     - script: conda list -n tomopy-bench
